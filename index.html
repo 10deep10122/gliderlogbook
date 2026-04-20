@@ -3,221 +3,232 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Opsparing</title>
+    <title>Opsparing Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        body { background: #121212; color: #e0e0e0; font-family: 'Inter', sans-serif; }
-        .gray-card { background: #1e1e1e; border: 1px solid #2a2a2a; border-radius: 20px; transition: 0.2s; }
-        .gray-card:hover { border-color: #444; }
-        .input-gray { background: #2a2a2a; border: 1px solid #3a3a3a; border-radius: 12px; color: white; padding: 12px; outline: none; width: 100%; }
-        .btn-main { background: #e0e0e0; color: #121212; font-weight: 700; border-radius: 12px; padding: 12px; transition: 0.2s; text-align: center; width: 100%; }
-        .btn-main:hover { background: #fff; transform: translateY(-2px); }
+        :root { --bg: #121212; --card: #1e1e1e; --text: #e0e0e0; --accent: #3b82f6; }
+        body.light { --bg: #f3f4f6; --card: #ffffff; --text: #111827; --accent: #2563eb; }
+        body.colorful { --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; --accent: #8b5cf6; background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%); }
+        
+        body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; transition: all 0.3s ease; }
+        .gray-card { background: var(--card); border: 1px solid rgba(255,255,255,0.05); border-radius: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .input-field { background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 12px; width: 100%; color: inherit; outline: none; }
+        .btn-main { background: var(--accent); color: white; font-weight: 700; border-radius: 14px; padding: 12px; width: 100%; transition: 0.2s; }
         .hidden { display: none; }
     </style>
 </head>
-<body class="p-6">
+<body class="p-4 md:p-8">
 
     <div class="max-w-md mx-auto">
         
-        <section id="step-user" class="space-y-8 pt-20">
-            <div class="text-center">
-                <h1 class="text-3xl font-bold">Velkommen</h1>
-                <p class="text-gray-500 mt-2">Vælg profil for at fortsætte</p>
+        <section id="step-user" class="space-y-8 pt-10">
+            <div class="flex justify-between items-center">
+                <h1 class="text-3xl font-black italic">OPSPARING</h1>
+                <div class="flex gap-2">
+                    <button onclick="setTheme('dark')" class="w-6 h-6 rounded-full bg-black border border-white/20"></button>
+                    <button onclick="setTheme('light')" class="w-6 h-6 rounded-full bg-white border border-black/20"></button>
+                    <button onclick="setTheme('colorful')" class="w-6 h-6 rounded-full bg-purple-600 border border-white/20"></button>
+                </div>
             </div>
-            <div class="grid gap-4">
-                <button onclick="selectUser('Jonathan')" class="gray-card p-6 flex items-center gap-4 hover:bg-[#252525]">
-                    <div class="w-12 h-12 bg-gray-700 rounded-full flex items-center justify-center text-xl font-bold">J</div>
-                    <span class="text-xl font-medium">Jonathan</span>
-                </button>
-                <button onclick="alert('Kun Jonathan er aktiv lige nu')" class="border border-dashed border-[#333] p-6 rounded-2xl text-gray-600 text-center">
-                    + Tilføj person
-                </button>
-            </div>
+            
+            <div id="user-container" class="grid gap-4">
+                </div>
         </section>
 
-        <section id="step-savings" class="hidden space-y-8 pt-10">
+        <section id="step-dashboard" class="hidden space-y-6">
             <div class="flex justify-between items-center">
-                <button onclick="goBack('step-user')" class="text-gray-500"><i class="fas fa-arrow-left"></i></button>
-                <h1 class="text-xl font-bold text-center">Mine Opsparinger</h1>
-                <div class="w-5"></div>
-            </div>
-            <div id="savings-list" class="grid gap-4">
+                <button onclick="goBack('step-user')" class="opacity-50 hover:opacity-100"><i class="fas fa-chevron-left text-xl"></i></button>
+                <div id="user-badge" class="flex items-center gap-2 bg-white/5 pr-4 rounded-full border border-white/5 cursor-pointer" onclick="openProfileEdit()">
+                    <img id="dash-pfp" src="" class="w-8 h-8 rounded-full object-cover">
+                    <span id="dash-name" class="text-xs font-bold uppercase tracking-widest">Jonathan</span>
                 </div>
-            <button onclick="toggleModal('goal-modal')" class="text-gray-500 text-sm underline w-full text-center">+ Opret ny opsparing</button>
-        </section>
-
-        <section id="step-dashboard" class="hidden space-y-8">
-            <div class="flex justify-between items-center">
-                <button onclick="goBack('step-savings')" class="text-gray-500"><i class="fas fa-arrow-left"></i></button>
-                <h1 id="current-goal-name" class="font-bold uppercase tracking-widest text-xs text-gray-500 text-center">Opsparing</h1>
-                <button onclick="toggleModal('settings-modal')" class="text-gray-500"><i class="fas fa-cog"></i></button>
+                <button onclick="openSettings()" class="opacity-50"><i class="fas fa-cog"></i></button>
             </div>
 
-            <div class="text-center py-10">
-                <p class="text-gray-500 text-xs uppercase tracking-widest mb-1">Mangler stadig</p>
-                <h2 id="display-remaining" class="text-6xl font-bold tracking-tighter">0 kr</h2>
-            </div>
-
-            <div class="space-y-6">
-                <div class="flex justify-between items-center border-b border-[#2a2a2a] pb-2">
-                    <h3 class="text-[10px] font-bold text-gray-500 uppercase">Opgaver</h3>
-                    <button onclick="toggleModal('task-modal')" class="text-xs text-blue-500">+ Ny</button>
+            <div id="goals-list" class="grid gap-4 pt-4">
                 </div>
+
+            <div class="pt-6">
+                <h3 class="text-[10px] font-bold opacity-50 uppercase tracking-[0.2em] mb-4">Opgaver</h3>
                 <div id="task-list" class="space-y-3"></div>
             </div>
 
-            <div class="space-y-4">
-                <h3 class="text-[10px] font-bold text-gray-500 uppercase border-b border-[#2a2a2a] pb-2">Logbog</h3>
-                <div id="money-log" class="space-y-2"></div>
-            </div>
+            <button onclick="toggleModal('task-modal')" class="fixed bottom-6 right-6 w-14 h-14 bg-blue-600 text-white rounded-full shadow-2xl flex items-center justify-center text-xl hover:scale-110 transition z-40">
+                <i class="fas fa-plus"></i>
+            </button>
         </section>
-
     </div>
 
-    <div id="goal-modal" class="hidden fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-6">
+    <div id="profile-modal" class="hidden fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-6">
+        <div class="gray-card p-8 w-full max-w-sm space-y-6">
+            <h2 class="text-xl font-bold">Rediger Profil</h2>
+            <div class="space-y-4">
+                <div class="flex flex-col items-center gap-4">
+                    <img id="edit-pfp-preview" src="" class="w-24 h-24 rounded-full object-cover border-2 border-blue-500">
+                    <input type="file" id="pfp-input" class="hidden" accept="image/*" onchange="previewPFP(this)">
+                    <button onclick="document.getElementById('pfp-input').click()" class="text-xs text-blue-500">Skift billede</button>
+                </div>
+                <input type="text" id="edit-name" placeholder="Navn" class="input-field">
+                <button onclick="saveProfile()" class="btn-main">Gem ændringer</button>
+                <button onclick="toggleModal('profile-modal')" class="w-full text-xs opacity-50">Luk</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="task-detail-modal" class="hidden fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-6">
         <div class="gray-card p-8 w-full max-w-sm space-y-4">
-            <h2 class="text-xl font-bold">Ny Opsparing</h2>
-            <input type="text" id="new-goal-title" placeholder="Navn (f.eks. Flyveklub)" class="input-gray">
-            <input type="number" id="new-goal-price" placeholder="Mål (kr)" class="input-gray">
-            <button onclick="createNewGoal()" class="btn-main">Opret</button>
-            <button onclick="toggleModal('goal-modal')" class="w-full text-gray-500 text-sm">Annuller</button>
+            <h2 id="det-title" class="text-2xl font-bold">Opgave</h2>
+            <div class="space-y-4">
+                <p id="det-desc" class="text-sm opacity-70">Ingen beskrivelse.</p>
+                <div class="flex justify-between text-xs font-mono py-2 border-y border-white/5">
+                    <span>Est. Tid: <span id="det-time" class="text-blue-500">-</span></span>
+                    <span>Løn: <span id="det-reward" class="text-green-500">-</span></span>
+                </div>
+                <button id="det-complete-btn" class="btn-main">UDFØR & TAG FOTO</button>
+                <button onclick="toggleModal('task-detail-modal')" class="w-full text-xs opacity-50">Luk</button>
+            </div>
         </div>
     </div>
 
     <div id="task-modal" class="hidden fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-6">
         <div class="gray-card p-8 w-full max-w-sm space-y-4">
-            <h2 class="text-xl font-bold">Opret Opgave</h2>
-            <input type="text" id="t-name" placeholder="Hvad skal du lave?" class="input-gray">
-            <input type="number" id="t-reward" placeholder="Løn (kr)" class="input-gray">
-            <button onclick="saveTask()" class="btn-main">Opret Opgave</button>
-            <button onclick="toggleModal('task-modal')" class="w-full text-gray-500 text-sm">Annuller</button>
+            <h2 class="text-xl font-bold">Ny Opgave</h2>
+            <input type="text" id="t-name" placeholder="Opgave" class="input-field">
+            <textarea id="t-desc" placeholder="Beskrivelse (hvad skal gøres?)" class="input-field h-24"></textarea>
+            <div class="grid grid-cols-2 gap-2">
+                <input type="number" id="t-reward" placeholder="Løn (kr)" class="input-field">
+                <input type="text" id="t-time" placeholder="Tid (f.eks. 1t)" class="input-field">
+            </div>
+            <button onclick="saveTask()" class="btn-main">Opret</button>
+            <button onclick="toggleModal('task-modal')" class="w-full text-xs opacity-50">Annuller</button>
         </div>
     </div>
 
-    <div id="image-modal" class="hidden fixed inset-0 bg-black/95 z-[60] flex items-center justify-center p-4" onclick="this.classList.add('hidden')">
-        <img id="preview-img" src="" class="max-w-full max-h-full rounded-xl shadow-2xl border border-white/10">
-    </div>
-
-    <input type="file" id="camera-input" class="hidden" accept="image/*" onchange="processCapture(this)">
+    <input type="file" id="camera-input" class="hidden" accept="image/*" capture="environment" onchange="finalizeTask(this)">
 
     <script>
-        let goals = JSON.parse(localStorage.getItem('ops_goals')) || [{ id: 1, name: 'Flyveklub', target: 8500, discount: 1100, other: 4920 }];
-        let logs = JSON.parse(localStorage.getItem('ops_logs')) || [{ id: 101, goalId: 1, amt: 420, note: 'Startbeløb', date: '09-04-2026', img: null }];
+        let userData = JSON.parse(localStorage.getItem('ops_user')) || { name: 'Jonathan', pfp: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200' };
+        let goals = JSON.parse(localStorage.getItem('ops_goals')) || [{ id: 1, name: 'Flyveklub', target: 8500 }];
         let tasks = JSON.parse(localStorage.getItem('ops_tasks')) || [];
+        let logs = JSON.parse(localStorage.getItem('ops_logs')) || [];
         
-        let currentGoalId = null;
-        let activeTaskId = null;
+        let currentTheme = localStorage.getItem('ops_theme') || 'dark';
+        let activeTask = null;
+
+        function setTheme(t) {
+            document.body.className = t;
+            localStorage.setItem('ops_theme', t);
+        }
 
         function toggleModal(id) { document.getElementById(id).classList.toggle('hidden'); }
 
-        function selectUser(name) {
-            document.getElementById('step-user').classList.add('hidden');
-            document.getElementById('step-savings').classList.remove('hidden');
-            renderSavingsList();
+        function renderUsers() {
+            const container = document.getElementById('user-container');
+            container.innerHTML = `
+                <div onclick="login()" class="gray-card p-6 flex items-center gap-4 cursor-pointer hover:scale-[1.02] transition">
+                    <img src="${userData.pfp}" class="w-14 h-14 rounded-full object-cover">
+                    <div>
+                        <p class="font-bold text-lg">${userData.name}</p>
+                        <p class="text-xs opacity-50">Tryk for at åbne opsparing</p>
+                    </div>
+                </div>
+                <button onclick="openProfileEdit()" class="text-xs opacity-40 hover:opacity-100 italic underline text-center w-full">Rediger profil & navn</button>
+            `;
+            document.getElementById('dash-pfp').src = userData.pfp;
+            document.getElementById('dash-name').innerText = userData.name;
         }
 
-        function selectGoal(id) {
-            currentGoalId = id;
-            document.getElementById('step-savings').classList.add('hidden');
+        function openProfileEdit() {
+            document.getElementById('edit-name').value = userData.name;
+            document.getElementById('edit-pfp-preview').src = userData.pfp;
+            toggleModal('profile-modal');
+        }
+
+        function previewPFP(input) {
+            if (input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = e => document.getElementById('edit-pfp-preview').src = e.target.result;
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function saveProfile() {
+            userData.name = document.getElementById('edit-name').value;
+            userData.pfp = document.getElementById('edit-pfp-preview').src;
+            localStorage.setItem('ops_user', JSON.stringify(userData));
+            renderUsers();
+            toggleModal('profile-modal');
+        }
+
+        function login() {
+            toggleModal('step-user');
             document.getElementById('step-dashboard').classList.remove('hidden');
             renderDashboard();
-        }
-
-        function goBack(stepId) {
-            document.getElementById('step-user').classList.add('hidden');
-            document.getElementById('step-savings').classList.add('hidden');
-            document.getElementById('step-dashboard').classList.add('hidden');
-            document.getElementById(stepId).classList.remove('hidden');
-        }
-
-        function renderSavingsList() {
-            const list = document.getElementById('savings-list');
-            list.innerHTML = goals.map(g => {
-                const saved = logs.filter(l => l.goalId === g.id).reduce((s, i) => s + i.amt, 0);
-                const rem = g.target - (g.discount || 0) - (g.other || 0) - saved;
-                return `
-                    <button onclick="selectGoal(${g.id})" class="gray-card p-6 text-left">
-                        <p class="text-xs text-gray-500 uppercase font-bold tracking-widest">${g.name}</p>
-                        <h3 class="text-2xl font-bold">${rem.toLocaleString()} kr <span class="text-gray-600 text-sm">tilbage</span></h3>
-                    </button>
-                `;
-            }).join('');
-        }
-
-        function createNewGoal() {
-            const name = document.getElementById('new-goal-title').value;
-            const price = document.getElementById('new-goal-price').value;
-            if(!name || !price) return;
-            goals.push({ id: Date.now(), name, target: parseInt(price) });
-            save(); renderSavingsList(); toggleModal('goal-modal');
         }
 
         function saveTask() {
             const name = document.getElementById('t-name').value;
             const reward = document.getElementById('t-reward').value;
+            const desc = document.getElementById('t-desc').value;
+            const time = document.getElementById('t-time').value;
             if(!name || !reward) return;
-            tasks.push({ id: Date.now(), name, reward: parseInt(reward), goalId: currentGoalId });
-            save(); renderDashboard(); toggleModal('task-modal');
-        }
-
-        function startComplete(id) { activeTaskId = id; document.getElementById('camera-input').click(); }
-
-        function processCapture(input) {
-            if (!input.files[0]) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const task = tasks.find(t => t.id === activeTaskId);
-                logs.unshift({
-                    id: Date.now(),
-                    goalId: currentGoalId,
-                    amt: task.reward,
-                    note: task.name,
-                    date: new Date().toLocaleDateString('da-DK'),
-                    img: e.target.result
-                });
-                tasks = tasks.filter(t => t.id !== activeTaskId);
-                save(); renderDashboard();
-            };
-            reader.readAsDataURL(input.files[0]);
-        }
-
-        function showImg(src) { 
-            document.getElementById('preview-img').src = src;
-            toggleModal('image-modal');
-        }
-
-        function save() {
-            localStorage.setItem('ops_goals', JSON.stringify(goals));
-            localStorage.setItem('ops_logs', JSON.stringify(logs));
+            tasks.push({ id: Date.now(), name, reward: parseInt(reward), desc, time });
             localStorage.setItem('ops_tasks', JSON.stringify(tasks));
+            toggleModal('task-modal');
+            renderDashboard();
+        }
+
+        function showTaskDetail(id) {
+            activeTask = tasks.find(t => t.id === id);
+            document.getElementById('det-title').innerText = activeTask.name;
+            document.getElementById('det-desc').innerText = activeTask.desc || 'Ingen beskrivelse.';
+            document.getElementById('det-time').innerText = activeTask.time || '-';
+            document.getElementById('det-reward').innerText = activeTask.reward + ' kr';
+            document.getElementById('det-complete-btn').onclick = () => document.getElementById('camera-input').click();
+            toggleModal('task-detail-modal');
+        }
+
+        function finalizeTask(input) {
+            if (!input.files[0]) return;
+            logs.unshift({ goalId: 1, amt: activeTask.reward, note: activeTask.name, date: new Date().toLocaleDateString() });
+            tasks = tasks.filter(t => t.id !== activeTask.id);
+            localStorage.setItem('ops_tasks', JSON.stringify(tasks));
+            localStorage.setItem('ops_logs', JSON.stringify(logs));
+            toggleModal('task-detail-modal');
+            renderDashboard();
+        }
+
+        function goBack(id) {
+            document.getElementById('step-dashboard').classList.add('hidden');
+            document.getElementById('step-user').classList.remove('hidden');
         }
 
         function renderDashboard() {
-            const g = goals.find(x => x.id === currentGoalId);
-            document.getElementById('current-goal-name').innerText = g.name;
+            const saved = logs.reduce((s, i) => s + i.amt, 0);
+            const goal = goals[0];
+            const rem = goal.target - 1100 - 4920 - saved;
 
-            const saved = logs.filter(l => l.goalId === g.id).reduce((s, i) => s + i.amt, 0);
-            const remaining = g.target - (g.discount || 0) - (g.other || 0) - saved;
-            document.getElementById('display-remaining').innerText = remaining.toLocaleString() + " kr";
-
-            document.getElementById('task-list').innerHTML = tasks.filter(t => t.goalId === currentGoalId).map(t => `
-                <div class="gray-card p-4 flex justify-between items-center">
-                    <span class="font-medium text-sm">${t.name} <span class="text-blue-500 ml-1">${t.reward}.-</span></span>
-                    <button onclick="startComplete(${t.id})" class="text-[10px] bg-blue-500/10 text-blue-500 px-3 py-1 rounded-full font-bold uppercase">Udfør & Foto</button>
+            document.getElementById('goals-list').innerHTML = `
+                <div class="gray-card p-8 text-center bg-gradient-to-br from-white/[0.02] to-transparent">
+                    <p class="text-[10px] uppercase tracking-widest opacity-40 mb-2">${goal.name}</p>
+                    <h2 class="text-5xl font-black tracking-tighter">${rem.toLocaleString()} kr</h2>
                 </div>
-            `).join('');
+            `;
 
-            document.getElementById('money-log').innerHTML = logs.filter(l => l.goalId === currentGoalId).map(l => `
-                <div class="flex justify-between items-center text-sm py-2">
-                    <div class="flex items-center gap-3">
-                        ${l.img ? `<button onclick="showImg('${l.img}')" class="text-blue-500"><i class="fas fa-paperclip"></i></button>` : '<i class="fas fa-check text-gray-700 text-[10px]"></i>'}
-                        <span>${l.note}</span>
+            document.getElementById('task-list').innerHTML = tasks.map(t => `
+                <div onclick="showTaskDetail(${t.id})" class="gray-card p-4 flex justify-between items-center cursor-pointer hover:bg-white/5">
+                    <div>
+                        <p class="font-bold text-sm">${t.name}</p>
+                        <p class="text-[10px] opacity-40 uppercase">${t.time || 'Ingen tid'}</p>
                     </div>
-                    <span class="font-bold text-gray-400">${l.amt} kr</span>
+                    <span class="font-mono text-blue-500 font-bold">${t.reward}.-</span>
                 </div>
             `).join('');
         }
+
+        setTheme(currentTheme);
+        renderUsers();
     </script>
 </body>
 </html>
