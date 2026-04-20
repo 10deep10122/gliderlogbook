@@ -11,12 +11,13 @@
         :root { --bg: #0a0a0a; --card: #141414; --text: #eee; --accent: #3b82f6; }
         body.light { --bg: #f5f5f7; --card: #ffffff; --text: #1d1d1f; --accent: #007aff; }
         body.colorful { --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; --accent: #8b5cf6; background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%); }
-        body { background: var(--bg); color: var(--text); font-family: -apple-system, sans-serif; transition: 0.3s; min-height: 100vh; overflow-x: hidden; }
-        .gray-card { background: var(--card); border: 1px solid rgba(255,255,255,0.05); border-radius: 28px; }
+        body { background: var(--bg); color: var(--text); font-family: -apple-system, sans-serif; transition: 0.3s; min-height: 100vh; margin: 0; }
+        .gray-card { background: var(--card); border: 1px solid rgba(255,255,255,0.05); border-radius: 32px; }
         .input-field { background: rgba(128,128,128,0.1); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; padding: 12px; width: 100%; color: inherit; outline: none; }
         .hidden { display: none !important; }
+        .btn-quick { background: #facc15; color: #000; transition: 0.2s; }
         .progress-bar { height: 8px; border-radius: 4px; background: rgba(255,255,255,0.1); overflow: hidden; }
-        .progress-fill { height: 100%; background: var(--accent); transition: width 1s ease-in-out; }
+        .progress-fill { height: 100%; background: var(--accent); transition: width 1s ease; }
     </style>
 </head>
 <body class="p-6">
@@ -25,160 +26,161 @@
         
         <section id="view-login" class="space-y-10 pt-10">
             <div class="flex justify-between items-center">
-                <h1 class="text-4xl font-black italic tracking-tighter">OPSPARING</h1>
+                <h1 class="text-4xl font-black italic tracking-tighter uppercase">Opsparing</h1>
                 <div class="flex gap-2">
                     <button onclick="setTheme('dark')" class="w-5 h-5 rounded-full bg-black border border-white/20"></button>
                     <button onclick="setTheme('light')" class="w-5 h-5 rounded-full bg-white border border-gray-300"></button>
                     <button onclick="setTheme('colorful')" class="w-5 h-5 rounded-full bg-purple-500"></button>
                 </div>
             </div>
-            
             <div onclick="showSavingsMenu()" class="gray-card p-6 flex items-center gap-4 cursor-pointer hover:scale-105 transition">
                 <img id="login-pfp" src="" class="w-16 h-16 rounded-full object-cover bg-gray-800">
                 <div>
-                    <h2 id="login-name" class="text-xl font-bold">Jonathan</h2>
+                    <h2 id="login-name" class="text-xl font-bold">Bruger</h2>
                     <p class="text-xs opacity-50 uppercase tracking-widest italic">🔥 <span id="login-streak">0</span> dages streak</p>
                 </div>
             </div>
-            <button onclick="toggleModal('profile-modal')" class="w-full text-xs opacity-30 underline">Rediger profil</button>
+            <button onclick="toggleModal('profile-modal')" class="w-full text-xs opacity-30 underline text-center">Rediger Profil</button>
         </section>
 
         <section id="view-savings-menu" class="hidden space-y-6 pt-10">
             <div class="flex justify-between items-center">
                 <button onclick="showView('view-login')"><i class="fas fa-chevron-left"></i></button>
-                <h2 class="font-bold">Mine Mål</h2>
+                <h2 class="font-bold uppercase text-[10px] tracking-widest">Mine Mål</h2>
                 <button onclick="toggleModal('goal-modal')"><i class="fas fa-plus"></i></button>
             </div>
             <div id="savings-grid" class="grid gap-4"></div>
         </section>
 
-        <section id="view-dashboard" class="hidden space-y-8">
+        <section id="view-dashboard" class="hidden space-y-8 pb-32">
             <div class="flex justify-between items-center">
-                <button onclick="showView('view-savings-menu')"><i class="fas fa-chevron-left"></i></button>
-                <div class="flex items-center gap-2">
-                    <span id="current-goal-title" class="text-[10px] font-bold opacity-50 uppercase tracking-widest">Mål</span>
-                    <span class="text-orange-500 font-bold text-sm">🔥 <span id="dash-streak">0</span></span>
-                </div>
-                <button onclick="openGoalSettings()"><i class="fas fa-cog"></i></button>
+                <button onclick="showView('view-savings-menu')"><i class="fas fa-chevron-left text-gray-500"></i></button>
+                <span id="current-goal-title" class="text-[10px] font-bold opacity-50 uppercase tracking-widest">Mål</span>
+                <button onclick="openGoalSettings()"><i class="fas fa-cog text-gray-500"></i></button>
             </div>
 
             <div class="text-center space-y-4">
                 <div class="py-6">
-                    <p class="text-xs opacity-40 uppercase tracking-widest mb-2">Mangler stadig</p>
+                    <p class="text-[10px] opacity-40 uppercase tracking-widest mb-2 font-bold">Mangler stadig</p>
                     <h2 id="dash-remaining" class="text-6xl font-black tracking-tighter">0 kr</h2>
                 </div>
                 
                 <div class="px-4">
-                    <div class="flex justify-between text-[10px] opacity-40 uppercase mb-2">
+                    <div class="flex justify-between text-[8px] opacity-40 uppercase mb-2 font-bold">
                         <span>Fremgang</span>
                         <span id="dash-pct">0%</span>
                     </div>
-                    <div class="progress-bar">
-                        <div id="dash-progress-fill" class="progress-fill" style="width: 0%"></div>
-                    </div>
+                    <div class="progress-bar"><div id="dash-progress-fill" class="progress-fill" style="width: 0%"></div></div>
                 </div>
 
-                <button onclick="generateShareCard()" class="text-[10px] bg-blue-600/20 text-blue-400 px-6 py-3 rounded-full font-bold uppercase tracking-widest hover:bg-blue-600 hover:text-white transition">
-                    <i class="fas fa-paper-plane mr-2"></i> Del Fremskridt
-                </button>
+                <div class="flex justify-center gap-3 mt-4">
+                    <button onclick="generateShareCard()" class="text-[10px] bg-white/5 border border-white/10 px-6 py-2 rounded-full font-bold uppercase tracking-widest">Del Fremskridt</button>
+                </div>
             </div>
 
             <div class="space-y-4">
-                <h3 class="text-[10px] font-bold opacity-30 uppercase tracking-widest border-b border-white/5 pb-2">Opgaver</h3>
+                <h3 class="text-[10px] font-bold opacity-30 uppercase tracking-widest border-b border-white/5 pb-2">Aktive Opgaver</h3>
                 <div id="dash-tasks" class="space-y-3"></div>
             </div>
 
-            <button onclick="toggleModal('task-modal')" class="fixed bottom-8 right-8 w-14 h-14 bg-blue-600 text-white rounded-full shadow-2xl flex items-center justify-center text-xl z-50">
-                <i class="fas fa-plus"></i>
-            </button>
+            <div class="space-y-4">
+                <h3 class="text-[10px] font-bold opacity-30 uppercase tracking-widest border-b border-white/5 pb-2">Logbog</h3>
+                <div id="dash-log" class="space-y-2 max-h-48 overflow-y-auto pr-2"></div>
+            </div>
+
+            <div class="fixed bottom-8 right-8 flex flex-col gap-4 items-end">
+                <button onclick="toggleModal('quick-log-modal')" class="btn-quick w-12 h-12 rounded-full shadow-2xl flex items-center justify-center text-lg z-50">
+                    <i class="fas fa-bolt"></i>
+                </button>
+                <button onclick="toggleModal('task-modal')" class="bg-blue-600 text-white w-14 h-14 rounded-full shadow-2xl flex items-center justify-center text-xl z-50">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
         </section>
     </div>
 
-    <div id="share-modal" class="hidden fixed inset-0 bg-black/95 z-[200] flex flex-col items-center justify-center p-6 text-center">
-        <div id="share-card" class="gray-card p-10 w-full max-w-sm space-y-6 border-2 border-blue-500/30 bg-gradient-to-b from-[#1a1a1a] to-[#0a0a0a]">
-            <div class="flex justify-center">
-                <img id="share-pfp" src="" class="w-20 h-20 rounded-full border-4 border-blue-500 shadow-xl">
-            </div>
-            <div>
-                <h2 class="text-2xl font-black italic" id="share-name">JONATHAN</h2>
-                <p class="text-blue-500 font-bold tracking-widest text-xs uppercase" id="share-goal-name">FLYVEKLUB</p>
-            </div>
-            <div class="py-4 border-y border-white/5">
-                <p class="text-xs opacity-50 mb-1 uppercase">Har sparet</p>
-                <p class="text-5xl font-black text-white" id="share-saved">0 kr</p>
-            </div>
-            <div class="text-orange-500 font-black italic text-xl">
-                🔥 <span id="share-streak">0</span> DAGES STREAK!
-            </div>
-        </div>
-        <div class="mt-8 flex flex-col gap-4 w-full max-w-sm">
-            <button onclick="nativeShare()" class="w-full bg-white text-black py-4 rounded-2xl font-bold uppercase tracking-widest">Send som besked</button>
-            <button onclick="toggleModal('share-modal')" class="text-white opacity-50 text-xs uppercase underline">Luk</button>
-        </div>
-    </div>
-
-    <div id="profile-modal" class="hidden fixed inset-0 bg-black/90 z-[100] flex items-center justify-center p-6">
+    <div id="profile-modal" class="hidden fixed inset-0 bg-black/95 z-[200] flex items-center justify-center p-6 text-white">
         <div class="gray-card p-8 w-full max-w-sm space-y-4">
-            <h2 class="text-xl font-bold">Rediger Profil</h2>
+            <h2 class="text-xl font-bold">Profil</h2>
             <img id="edit-pfp-preview" src="" class="w-24 h-24 rounded-full mx-auto object-cover border-2 border-blue-500">
             <input type="file" id="pfp-upload" class="hidden" accept="image/*" onchange="previewPFP(this)">
-            <button onclick="document.getElementById('pfp-upload').click()" class="w-full text-xs text-blue-500">Skift billede</button>
+            <button onclick="document.getElementById('pfp-upload').click()" class="w-full text-xs text-blue-500">Vælg billede</button>
             <input type="text" id="edit-name" placeholder="Navn" class="input-field text-white">
             <button onclick="saveProfile()" class="w-full py-4 bg-blue-600 rounded-2xl font-bold">GEM</button>
+            <button onclick="toggleModal('profile-modal')" class="w-full text-xs opacity-50 uppercase font-bold">Luk</button>
         </div>
     </div>
 
-    <div id="task-modal" class="hidden fixed inset-0 bg-black/90 z-[100] flex items-center justify-center p-6 text-white">
+    <div id="quick-log-modal" class="hidden fixed inset-0 bg-black/95 z-[200] flex items-center justify-center p-6 text-white">
+        <div class="gray-card p-8 w-full max-w-sm space-y-6">
+            <div class="text-center">
+                <i class="fas fa-bolt text-yellow-500 text-3xl mb-2"></i>
+                <h2 class="text-xl font-bold italic tracking-tighter">HURTIG-LOG</h2>
+                <p class="text-[10px] opacity-40 uppercase tracking-widest">Tilføj penge til opsparing</p>
+            </div>
+            <input type="number" id="quick-amt" placeholder="Beløb (kr)" class="input-field text-2xl text-center font-black">
+            <button onclick="submitQuickLog()" class="w-full py-4 bg-yellow-500 text-black rounded-2xl font-black uppercase tracking-widest">LOG PENGE</button>
+            <button onclick="toggleModal('quick-log-modal')" class="w-full text-xs opacity-50 uppercase font-bold">Luk</button>
+        </div>
+    </div>
+
+    <div id="task-modal" class="hidden fixed inset-0 bg-black/95 z-[200] flex items-center justify-center p-6 text-white">
         <div class="gray-card p-8 w-full max-w-sm space-y-4">
             <h2 class="text-xl font-bold">Ny Opgave</h2>
-            <input type="text" id="t-name" placeholder="Opgave" class="input-field text-white">
-            <textarea id="t-desc" placeholder="Beskrivelse" class="input-field text-white"></textarea>
+            <input type="text" id="t-name" placeholder="Opgave" class="input-field">
+            <textarea id="t-desc" placeholder="Beskrivelse" class="input-field"></textarea>
             <div class="grid grid-cols-2 gap-2">
-                <input type="number" id="t-reward" placeholder="Løn" class="input-field text-white">
-                <input type="text" id="t-time" placeholder="Tid (fx 2t)" class="input-field text-white">
+                <input type="number" id="t-reward" placeholder="Løn" class="input-field">
+                <input type="text" id="t-time" placeholder="Tid" class="input-field">
             </div>
-            <button onclick="createNewTask()" class="w-full py-4 bg-blue-600 rounded-2xl font-bold text-white">OPRET</button>
-            <button onclick="toggleModal('task-modal')" class="w-full text-xs opacity-50 text-white">Luk</button>
+            <button onclick="createNewTask()" class="w-full py-4 bg-blue-600 rounded-2xl font-bold uppercase tracking-widest">Opret</button>
+            <button onclick="toggleModal('task-modal')" class="w-full text-xs opacity-50 uppercase font-bold">Luk</button>
         </div>
+    </div>
+
+    <div id="share-modal" class="hidden fixed inset-0 bg-black/98 z-[300] flex flex-col items-center justify-center p-6">
+        <div id="share-card" class="gray-card p-10 w-full max-w-sm space-y-8 border border-white/10 text-center relative overflow-hidden bg-black">
+            <img id="share-pfp" src="" class="w-24 h-24 rounded-full mx-auto border-4 border-blue-500 shadow-2xl">
+            <h2 class="text-2xl font-black italic uppercase" id="share-name">JONATHAN</h2>
+            <div class="py-6 border-y border-white/5">
+                <p class="text-[10px] opacity-40 uppercase mb-2">Jeg mangler kun</p>
+                <p class="text-5xl font-black text-white tracking-tighter" id="share-needed">0 KR</p>
+            </div>
+            <p class="text-orange-500 font-black italic text-xl">🔥 <span id="share-streak">0</span> DAGE STREAK</p>
+        </div>
+        <button onclick="nativeShare()" class="mt-8 bg-white text-black px-12 py-4 rounded-2xl font-black uppercase tracking-widest">Del via Besked</button>
+        <button onclick="toggleModal('share-modal')" class="mt-4 text-white opacity-50 uppercase text-[10px] font-bold">Luk</button>
     </div>
 
     <input type="file" id="camera-input" class="hidden" accept="image/*" capture="environment" onchange="completeActiveTask()">
 
     <script>
-        let userData = JSON.parse(localStorage.getItem('v6_user')) || { name: 'Jonathan', pfp: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200' };
-        let goals = JSON.parse(localStorage.getItem('v6_goals')) || [{ id: 1, name: 'Flyveklub', target: 8500, discount: 1100, other: 4920 }];
-        let logs = JSON.parse(localStorage.getItem('v6_logs')) || [];
-        let tasks = JSON.parse(localStorage.getItem('v6_tasks')) || [];
-        let milestonesReached = JSON.parse(localStorage.getItem('v6_milestones')) || [];
-
+        // DATA V9
+        let userData = JSON.parse(localStorage.getItem('v9_user')) || { name: 'Jonathan', pfp: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200' };
+        let goals = JSON.parse(localStorage.getItem('v9_goals')) || [{ id: 1, name: 'Flyveklub', target: 8500, discount: 1100, other: 4920 }];
+        let logs = JSON.parse(localStorage.getItem('v9_logs')) || [];
+        let tasks = JSON.parse(localStorage.getItem('v9_tasks')) || [];
         let activeGoalId = null;
         let activeTaskId = null;
 
-        function setTheme(t) { document.body.className = t; localStorage.setItem('v6_theme', t); }
-        function toggleModal(id) { document.getElementById(id).classList.toggle('hidden'); }
+        // TEMAER
+        function setTheme(t) { document.body.className = t; localStorage.setItem('v9_theme', t); }
+
+        // NAVIGATION
         function showView(id) {
-            ['view-login', 'view-savings-menu', 'view-dashboard'].forEach(v => document.getElementById(v).classList.add('hidden'));
+            document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
             document.getElementById(id).classList.remove('hidden');
             if(id === 'view-login') renderUser();
         }
+        function toggleModal(id) { document.getElementById(id).classList.toggle('hidden'); }
 
-        function calculateStreak() {
-            if (logs.length === 0) return 0;
-            const uniqueDates = [...new Set(logs.map(l => l.date))].sort((a, b) => new Date(b.split('.').reverse().join('-')) - new Date(a.split('.').reverse().join('-')));
-            let streak = 0; let checkDate = new Date();
-            for (let d of uniqueDates) {
-                let logDate = new Date(d.split('.').reverse().join('-'));
-                if (Math.floor((checkDate - logDate) / 86400000) <= 1) { streak++; checkDate = logDate; } else break;
-            }
-            return streak;
-        }
-
+        // USER
         function renderUser() {
             document.getElementById('login-name').innerText = userData.name;
             document.getElementById('login-pfp').src = userData.pfp;
-            const streak = calculateStreak();
-            document.getElementById('login-streak').innerText = streak;
-            document.getElementById('dash-streak').innerText = streak;
+            document.getElementById('login-streak').innerText = calculateStreak();
+            document.getElementById('edit-name').value = userData.name;
+            document.getElementById('edit-pfp-preview').src = userData.pfp;
         }
 
         function previewPFP(input) {
@@ -192,99 +194,115 @@
         function saveProfile() {
             userData.name = document.getElementById('edit-name').value || 'Jonathan';
             userData.pfp = document.getElementById('edit-pfp-preview').src;
-            localStorage.setItem('v6_user', JSON.stringify(userData));
+            localStorage.setItem('v9_user', JSON.stringify(userData));
             renderUser(); toggleModal('profile-modal');
         }
 
+        function calculateStreak() {
+            if (logs.length === 0) return 0;
+            const uniqueDates = [...new Set(logs.map(l => l.date))].sort((a, b) => new Date(b.split('.').reverse().join('-')) - new Date(a.split('.').reverse().join('-')));
+            let streak = 0; let checkDate = new Date();
+            for (let d of uniqueDates) {
+                let logDate = new Date(d.split('.').reverse().join('-'));
+                if (Math.floor((checkDate - logDate) / 86400000) <= 1) { streak++; checkDate = logDate; } else break;
+            }
+            return streak;
+        }
+
+        // GOALS
         function showSavingsMenu() {
             showView('view-savings-menu');
             const grid = document.getElementById('savings-grid');
             grid.innerHTML = goals.map(g => {
                 const saved = logs.filter(l => l.goalId === g.id).reduce((s, i) => s + i.amt, 0);
                 const rem = g.target - (g.discount || 0) - (g.other || 0) - saved;
-                return `<div onclick="openDashboard(${g.id})" class="gray-card p-6 cursor-pointer"><p class="text-[10px] font-bold opacity-30 uppercase tracking-widest">${g.name}</p><h3 class="text-2xl font-bold">${rem.toLocaleString()} kr</h3></div>`;
+                return `<div onclick="openDashboard(${g.id})" class="gray-card p-6 cursor-pointer border border-white/5"><p class="text-[10px] font-bold opacity-30 uppercase tracking-widest">${g.name}</p><h3 class="text-2xl font-bold">${(rem > 0 ? rem : 0).toLocaleString()} kr</h3></div>`;
             }).join('');
         }
 
         function openDashboard(id) { activeGoalId = id; showView('view-dashboard'); renderDashboard(); }
+
+        function renderDashboard() {
+            const g = goals.find(x => x.id === activeGoalId);
+            const saved = logs.filter(l => l.goalId === activeGoalId).reduce((s, i) => s + i.amt, 0);
+            const total = (g.target - (g.discount || 0) - (g.other || 0));
+            const rem = total - saved;
+            const pct = Math.min(100, Math.floor((saved / total) * 100));
+
+            document.getElementById('dash-remaining').innerText = (rem > 0 ? rem : 0).toLocaleString() + " kr";
+            document.getElementById('dash-pct').innerText = pct + "%";
+            document.getElementById('dash-progress-fill').style.width = pct + "%";
+            document.getElementById('current-goal-title').innerText = g.name;
+
+            document.getElementById('dash-tasks').innerHTML = tasks.filter(t => t.goalId === activeGoalId).map(t => `
+                <div onclick="activeTaskId=${t.id}; document.getElementById('camera-input').click()" class="gray-card p-4 flex justify-between items-center cursor-pointer border border-white/5">
+                    <div>
+                        <p class="font-bold text-sm">${t.name}</p>
+                        <p class="text-[8px] opacity-40 uppercase">${t.time || ''}</p>
+                    </div>
+                    <span class="text-blue-500 font-bold">${t.reward}.-</span>
+                </div>
+            `).join('');
+
+            document.getElementById('dash-log').innerHTML = logs.filter(l => l.goalId === activeGoalId).map(l => `
+                <div class="flex justify-between items-center text-[10px] opacity-60 py-1">
+                    <span>${l.note} <span class="opacity-30 text-[8px]">${l.date}</span></span>
+                    <span class="font-bold text-green-500">+${l.amt} kr</span>
+                </div>
+            `).join('');
+        }
+
+        // FUNKTIONER: LOG PENGE
+        function submitQuickLog() {
+            const amt = parseInt(document.getElementById('quick-amt').value);
+            if (!amt) return;
+            logs.unshift({ goalId: activeGoalId, amt: amt, note: "Hurtig-log ⚡", date: new Date().toLocaleDateString('da-DK') });
+            localStorage.setItem('v9_logs', JSON.stringify(logs));
+            document.getElementById('quick-amt').value = '';
+            if(amt >= 100) confetti({ particleCount: 150 });
+            toggleModal('quick-log-modal'); renderDashboard(); renderUser();
+        }
 
         function createNewTask() {
             const name = document.getElementById('t-name').value;
             const reward = document.getElementById('t-reward').value;
             const desc = document.getElementById('t-desc').value;
             const time = document.getElementById('t-time').value;
+            if(!name || !reward) return;
             tasks.push({ id: Date.now(), goalId: activeGoalId, name, reward: parseInt(reward), desc, time });
-            localStorage.setItem('v6_tasks', JSON.stringify(tasks));
+            localStorage.setItem('v9_tasks', JSON.stringify(tasks));
             toggleModal('task-modal'); renderDashboard();
         }
 
         function completeActiveTask() {
-            const t = tasks.find(x => x.id = activeTaskId);
+            const t = tasks.find(x => x.id === activeTaskId);
             logs.unshift({ goalId: activeGoalId, amt: t.reward, note: t.name, date: new Date().toLocaleDateString('da-DK') });
             tasks = tasks.filter(x => x.id !== activeTaskId);
-            localStorage.setItem('v6_logs', JSON.stringify(logs));
-            localStorage.setItem('v6_tasks', JSON.stringify(tasks));
-            checkMilestones();
+            localStorage.setItem('v9_logs', JSON.stringify(logs));
+            localStorage.setItem('v9_tasks', JSON.stringify(tasks));
+            confetti({ particleCount: 150 });
             renderDashboard(); renderUser();
-        }
-
-        function checkMilestones() {
-            const g = goals.find(x => x.id === activeGoalId);
-            const saved = logs.filter(l => l.goalId === g.id).reduce((s, i) => s + i.amt, 0);
-            const pct = Math.floor((saved / (g.target - (g.discount||0) - (g.other||0))) * 100);
-            
-            [25, 50, 75, 100].forEach(m => {
-                if (pct >= m && !milestonesReached.includes(`${g.id}-${m}`)) {
-                    confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-                    alert(`🎉 TILLYKKE! Du har nået ${m}% af dit mål for ${g.name}!`);
-                    milestonesReached.push(`${g.id}-${m}`);
-                    localStorage.setItem('v6_milestones', JSON.stringify(milestonesReached));
-                }
-            });
-        }
-
-        function renderDashboard() {
-            const g = goals.find(x => x.id === activeGoalId);
-            const saved = logs.filter(l => l.goalId === activeGoalId).reduce((s, i) => s + i.amt, 0);
-            const totalToSave = g.target - (g.discount || 0) - (g.other || 0);
-            const rem = totalToSave - saved;
-            const pct = Math.min(100, Math.floor((saved / totalToSave) * 100));
-
-            document.getElementById('dash-remaining').innerText = (rem > 0 ? rem : 0).toLocaleString() + " kr";
-            document.getElementById('dash-pct').innerText = pct + "%";
-            document.getElementById('dash-progress-fill').style.width = pct + "%";
-
-            document.getElementById('dash-tasks').innerHTML = tasks.filter(t => t.goalId === activeGoalId).map(t => `
-                <div onclick="activeTaskId=${t.id}; document.getElementById('camera-input').click();" class="gray-card p-4 flex justify-between items-center cursor-pointer">
-                    <span class="font-medium">${t.name}</span>
-                    <span class="text-blue-500 font-bold">${t.reward}.-</span>
-                </div>
-            `).join('');
         }
 
         function generateShareCard() {
             const g = goals.find(x => x.id === activeGoalId);
             const saved = logs.filter(l => l.goalId === activeGoalId).reduce((s, i) => s + i.amt, 0);
+            const rem = (g.target - (g.discount || 0) - (g.other || 0)) - saved;
             document.getElementById('share-name').innerText = userData.name.toUpperCase();
             document.getElementById('share-pfp').src = userData.pfp;
-            document.getElementById('share-goal-name').innerText = g.name.toUpperCase();
-            document.getElementById('share-saved').innerText = saved.toLocaleString() + " KR";
+            document.getElementById('share-needed').innerText = (rem > 0 ? rem : 0).toLocaleString() + " KR";
             document.getElementById('share-streak').innerText = calculateStreak();
             toggleModal('share-modal');
         }
 
         async function nativeShare() {
-            const streak = calculateStreak();
             const g = goals.find(x => x.id === activeGoalId);
-            const text = `🔥 Jeg har lige ramt en ${streak} dages streak på min opsparing til ${g.name}! Tjek det ud! 💰`;
-            if (navigator.share) {
-                await navigator.share({ title: 'Opsparing Pro', text: text, url: window.location.href });
-            } else {
-                alert("Kopieret til udklipsholder: " + text);
-            }
+            const text = `💰 Status på mit mål: ${g.name.toUpperCase()}\nMangler kun ${document.getElementById('share-needed').innerText}! 🔥\nStreak: ${calculateStreak()} dage.`;
+            if (navigator.share) { await navigator.share({ text: text }); } 
+            else { alert("Kopieret til udklipsholder!"); navigator.clipboard.writeText(text); }
         }
 
-        setTheme(localStorage.getItem('v6_theme') || 'dark');
+        setTheme(localStorage.getItem('v9_theme') || 'dark');
         renderUser();
     </script>
 </body>
