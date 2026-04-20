@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Jonathan Opsparing Pro v25</title>
+    <title>Jonathan Opsparing Pro v27</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -15,140 +14,112 @@
 
     <style>
         :root { --bg: #000; --card: #1c1c1e; --blue: #0a84ff; }
-        body { background: var(--bg); color: #fff; font-family: -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top); min-height: 100vh; -webkit-tap-highlight-color: transparent; }
-        .ios-card { background: var(--card); border-radius: 28px; border: 1px solid rgba(255,255,255,0.06); }
+        body { background: var(--bg); color: #fff; font-family: -apple-system, sans-serif; padding-top: env(safe-area-inset-top); min-height: 100vh; }
+        .ios-card { background: var(--card); border-radius: 24px; border: 1px solid rgba(255,255,255,0.06); }
         .hidden { display: none !important; }
-        
-        input, select { background: #2c2c2e !important; border: none !important; color: white !important; border-radius: 16px !important; padding: 18px !important; width: 100%; font-size: 17px; outline: none; }
-        input:focus { ring: 2px solid var(--blue); }
-        
-        .btn-main { background: #fff; color: #000; font-weight: 900; border-radius: 22px; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
-        .btn-main:active { transform: scale(0.95); opacity: 0.8; }
-        
-        .floating-add { position: fixed; bottom: 40px; right: 25px; width: 72px; height: 72px; background: #facc15; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; color: black; z-index: 100; box-shadow: 0 15px 35px rgba(250,204,21,0.4); border: none; }
-        
-        /* Progress Bar Animation */
-        #dash-bar { transition: width 1.5s cubic-bezier(0.65, 0, 0.35, 1); }
-        
-        /* Share Template Design */
-        #share-template {
-            width: 400px; padding: 50px; background: linear-gradient(145deg, #0a84ff 0%, #000 100%);
-            border-radius: 50px; text-align: center; position: fixed; left: -9999px;
-        }
-
-        /* Pulse Sync */
-        .sync-active { animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+        input { background: #2c2c2e !important; border: none !important; color: white !important; border-radius: 14px !important; padding: 15px !important; width: 100%; }
+        .btn-main { background: #fff; color: #000; font-weight: 900; border-radius: 18px; transition: 0.2s; }
+        .floating-add { position: fixed; bottom: 30px; right: 20px; width: 64px; height: 64px; background: #facc15; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; color: black; z-index: 100; box-shadow: 0 10px 30px rgba(250,204,21,0.4); }
+        #dash-bar { transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1); }
     </style>
 </head>
-<body class="p-4 pb-20">
+<body class="p-4 pb-24">
 
-    <div class="fixed top-4 right-4 flex items-center gap-2 z-[1000] bg-black/60 backdrop-blur-xl px-4 py-2 rounded-full border border-white/10 shadow-2xl">
-        <div id="sync-dot" class="w-2.5 h-2.5 rounded-full bg-green-500 shadow-[0_0_10px_#22c55e]"></div>
-        <span id="sync-label" class="text-[10px] font-black uppercase opacity-80 tracking-widest italic">Jonathan Cloud</span>
+    <div class="fixed top-4 right-4 flex items-center gap-2 z-[1000] bg-black/60 px-3 py-1.5 rounded-full border border-white/10 backdrop-blur-md">
+        <div id="sync-dot" class="w-2 h-2 rounded-full bg-green-500"></div>
+        <span class="text-[9px] font-black uppercase opacity-60 tracking-tighter">Live Cloud Sync</span>
     </div>
 
     <div class="max-w-md mx-auto space-y-8">
         
-        <header class="flex justify-between items-center pt-6 px-2">
-            <div>
-                <p class="text-blue-500 font-black text-[10px] uppercase tracking-[0.3em] mb-1">Status Report</p>
-                <h1 class="text-4xl font-black italic uppercase tracking-tighter">Jonathan</h1>
+        <header class="flex justify-between items-center pt-4 px-2">
+            <div class="flex flex-col">
+                <p class="text-[10px] font-black text-blue-500 uppercase tracking-widest mb-1">Vælg Mål</p>
+                <select id="profile-selector" onchange="switchProfile(this.value)" class="bg-transparent text-2xl font-black italic uppercase tracking-tighter outline-none border-none text-white cursor-pointer appearance-none">
+                    </select>
             </div>
-            <button onclick="generateShareImage()" class="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center text-blue-500 border border-white/5 active:scale-90 transition">
-                <i class="fas fa-paper-plane text-xl"></i>
-            </button>
+            <div class="flex gap-2">
+                <button onclick="toggleModal('modal-edit-goal')" class="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center text-white/40 border border-white/5"><i class="fas fa-cog"></i></button>
+                <button onclick="generateShareImage()" class="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center text-blue-500 border border-white/5"><i class="fas fa-share-nodes"></i></button>
+            </div>
         </header>
 
         <section id="view-dash" class="space-y-10">
-            <div class="text-center space-y-6 py-4">
+            <div class="text-center space-y-5">
                 <div class="space-y-1">
-                    <p id="dash-goal-title" class="text-[12px] font-black opacity-30 uppercase tracking-[0.4em]">Henter fra skyen...</p>
-                    <h2 id="dash-rem" class="text-8xl font-black tracking-tighter tabular-nums">0 kr</h2>
-                    <p class="text-[10px] font-black opacity-20 uppercase tracking-widest">Mangler til Flyveklub</p>
+                    <h2 id="dash-rem" class="text-7xl font-black tracking-tighter">0 kr</h2>
+                    <p class="text-[10px] font-black opacity-20 uppercase tracking-widest">Mangler i alt</p>
                 </div>
-                
-                <div class="px-2">
-                    <div class="w-full bg-white/5 h-4 rounded-full overflow-hidden border border-white/5 p-[2px]">
-                        <div id="dash-bar" class="bg-blue-500 h-full rounded-full shadow-[0_0_25px_rgba(10,132,255,0.7)]"></div>
+                <div class="px-4">
+                    <div class="w-full bg-white/5 h-3 rounded-full overflow-hidden mb-2">
+                        <div id="dash-bar" class="bg-blue-500 h-full shadow-[0_0_15px_#0a84ff]"></div>
                     </div>
-                    <div class="flex justify-between mt-3 px-1">
-                        <span id="dash-pct" class="text-blue-500 font-black text-xs italic">0%</span>
-                        <span id="dash-total" class="opacity-30 font-bold text-[10px] uppercase tracking-tighter">Mål: 8.500 kr</span>
+                    <div class="flex justify-between text-[10px] font-black opacity-40 uppercase tracking-widest italic">
+                        <span id="dash-pct">0% Færdig</span>
+                        <span id="dash-goal-val">Mål: 0 kr</span>
                     </div>
                 </div>
             </div>
 
-            <div class="space-y-5">
-                <div class="flex justify-between items-center px-3">
-                    <h3 class="text-[13px] font-black opacity-50 uppercase tracking-[0.2em]">Aktive Opgaver</h3>
-                    <button onclick="toggleModal('modal-task')" class="text-blue-500 font-black text-xs bg-blue-500/10 px-3 py-1 rounded-full">+ NY</button>
+            <div class="space-y-4">
+                <div class="flex justify-between items-center px-2">
+                    <h3 class="text-[11px] font-black opacity-50 uppercase tracking-widest">Opgaver</h3>
+                    <button onclick="toggleModal('modal-task')" class="text-blue-500 font-black text-xs">+ NY OPGAVE</button>
                 </div>
-                <div id="dash-tasks" class="grid gap-4"></div>
+                <div id="dash-tasks" class="space-y-3"></div>
             </div>
 
-            <div class="space-y-5 pb-20">
-                <div class="flex justify-between items-center px-3">
-                    <h3 class="text-[13px] font-black opacity-50 uppercase tracking-[0.2em]">Logbog & Beviser</h3>
-                    <div id="streak-counter" class="text-orange-500 font-black text-[10px] uppercase italic">🔥 0 dage</div>
-                </div>
-                <div id="dash-logs" class="ios-card p-6 space-y-8 divide-y divide-white/5 shadow-2xl"></div>
+            <div class="space-y-4">
+                <h3 class="text-[11px] font-black opacity-50 uppercase tracking-widest px-2 italic">Historik (Klik for bevis)</h3>
+                <div id="dash-logs" class="ios-card p-5 space-y-4 divide-y divide-white/5"></div>
             </div>
         </section>
     </div>
 
-    <div id="modal-share" class="hidden fixed inset-0 bg-black/98 z-[2000] flex items-center justify-center p-6 backdrop-blur-3xl" onclick="this.classList.add('hidden')">
-        <div class="text-center space-y-8">
-            <div class="space-y-2">
-                <h3 class="text-xl font-black italic uppercase tracking-tighter">Del dit fremskridt</h3>
-                <p class="text-white/40 text-xs font-bold uppercase tracking-widest">Hold nede på billedet for at kopiere</p>
+    <div id="modal-edit-goal" class="hidden fixed inset-0 bg-black/95 z-[1500] flex items-center p-6 backdrop-blur-xl">
+        <div class="ios-card w-full p-8 space-y-6">
+            <h2 class="text-2xl font-black uppercase italic">Rediger Mål</h2>
+            <div class="space-y-4">
+                <div><label class="text-[10px] font-black opacity-40 uppercase ml-2">Navn</label><input type="text" id="edit-goal-name"></div>
+                <div><label class="text-[10px] font-black opacity-40 uppercase ml-2">Total Mål (kr)</label><input type="number" id="edit-goal-target"></div>
+                <div><label class="text-[10px] font-black opacity-40 uppercase ml-2">Allerede sparet (kr)</label><input type="number" id="edit-goal-base"></div>
             </div>
-            <div id="share-image-container" class="rounded-[50px] overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.5)] border border-white/10 active:scale-105 transition duration-500"></div>
-            <button class="text-white/20 font-black uppercase text-[10px] tracking-widest">Tryk for at lukke</button>
+            <button onclick="saveGoalEdit()" class="w-full py-5 btn-main uppercase">Gem ændringer</button>
+            <button onclick="toggleModal('modal-edit-goal')" class="w-full text-xs opacity-30 font-black uppercase py-4">Annuller</button>
         </div>
     </div>
 
-    <div id="share-template">
-        <div style="font-weight: 900; color: #3b82f6; letter-spacing: 6px; font-size: 14px; margin-bottom: 40px; text-transform: uppercase;">Cloud Update</div>
-        <h1 id="s-goal" style="font-size: 36px; font-weight: 900; color: white; text-transform: uppercase; margin-bottom: 50px; font-style: italic; letter-spacing: -1px;">MÅL</h1>
-        <div style="background: rgba(255,255,255,0.05); padding: 60px 20px; border-radius: 40px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 50px; position: relative; overflow: hidden;">
-            <p style="font-size: 12px; color: white; opacity: 0.4; font-weight: 900; margin-bottom: 10px; letter-spacing: 3px;">STATUS: MANGLER KUN</p>
-            <h2 id="s-rem" style="font-size: 72px; font-weight: 900; letter-spacing: -5px; color: white;">0 kr</h2>
-        </div>
-        <div style="font-size: 26px; font-weight: 900; color: white; italic">🔥 JONATHAN PRO</div>
-    </div>
-
-    <div id="modal-task" class="hidden fixed inset-0 bg-black/90 backdrop-blur-2xl z-[1500] flex items-center p-6">
-        <div class="ios-card w-full p-8 space-y-6 shadow-2xl">
+    <div id="modal-evidence" class="hidden fixed inset-0 bg-black/98 z-[2000] flex items-center justify-center p-6" onclick="this.classList.add('hidden')">
+        <div class="w-full max-w-sm space-y-6 text-center">
+            <img id="evidence-img" src="" class="w-full rounded-3xl border border-white/10 shadow-2xl aspect-square object-cover">
             <div class="space-y-1">
-                <h2 class="text-3xl font-black italic uppercase tracking-tighter">Opret Opgave</h2>
-                <p class="opacity-40 text-[10px] font-bold uppercase tracking-widest italic">Hvad skal du lave for at tjene penge?</p>
+                <p id="evidence-note" class="font-black text-2xl uppercase italic"></p>
+                <p class="text-xs opacity-30 uppercase font-black tracking-widest">Tryk for at lukke</p>
             </div>
-            <input type="text" id="t-name" placeholder="F.eks. Slå græsset">
+        </div>
+    </div>
+
+    <div id="modal-task" class="hidden fixed inset-0 bg-black/90 z-[1500] flex items-center p-6">
+        <div class="ios-card w-full p-8 space-y-5">
+            <h2 class="text-2xl font-black italic uppercase">Ny Opgave</h2>
+            <input type="text" id="t-name" placeholder="F.eks. Støvsuge">
             <input type="number" id="t-reward" placeholder="Løn i kr">
-            <button onclick="addTask()" class="w-full py-5 btn-main text-lg uppercase tracking-tight shadow-xl">Tilføj til listen</button>
-            <button onclick="toggleModal('modal-task')" class="w-full text-[10px] opacity-30 font-black uppercase tracking-widest py-2">Annuller</button>
+            <button onclick="addTask()" class="w-full py-5 btn-main uppercase">Tilføj opgave</button>
+            <button onclick="toggleModal('modal-task')" class="w-full text-xs opacity-30 font-black uppercase py-4">Luk</button>
         </div>
     </div>
 
     <button onclick="addManualMoney()" class="floating-add"><i class="fas fa-plus"></i></button>
-
     <input type="file" id="camera-input" class="hidden" accept="image/*" capture="environment" onchange="completeTask(event)">
 
     <script>
-        // DIN SUPABASE KONFIGURATION
         const SUPABASE_URL = "https://kexfggljjpirfugtsobe.supabase.co";
         const SUPABASE_KEY = "sb_publishable_Qs19BzZiPZoRljsrO7JC-Q_malvvmSy";
-
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        let state = { 
-            goals: [{ id: 1, name: 'Flyveklub', target: 8500, base: 6020 }], 
-            logs: [], 
-            tasks: [] 
-        };
+        let state = { activeProfileIndex: 0, profiles: [] };
+        let activeTaskId = null;
 
-        // --- CLOUD LOGIK ---
         async function loadData() {
             const { data } = await _supabase.from('savings_data').select('*').single();
             if (data) { 
@@ -157,166 +128,134 @@
             }
         }
 
-        async function syncData() {
-            const dot = document.getElementById('sync-dot');
-            dot.classList.add('sync-active');
-            dot.style.background = '#facc15';
-            
+        async function sync() {
+            document.getElementById('sync-dot').style.background = '#facc15';
             await _supabase.from('savings_data').upsert({ id: 1, json_data: state });
-            
-            dot.classList.remove('sync-active');
-            dot.style.background = '#22c55e';
+            document.getElementById('sync-dot').style.background = '#22c55e';
             render();
         }
 
-        // Realtime Subscription: Opdaterer PC automatisk når mobil gemmer
-        _supabase.channel('cloud-sync')
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'savings_data' }, payload => {
-                state = payload.new.json_data;
-                render();
-            }).subscribe();
-
-        // --- UI RENDER ---
         function render() {
-            const g = state.goals[0];
-            const saved = state.logs.reduce((s, i) => s + i.amt, 0);
-            const totalToSave = g.target - g.base;
+            if (!state.profiles.length) return;
+            const p = state.profiles[state.activeProfileIndex];
+            const saved = p.logs.reduce((s, i) => s + i.amt, 0);
+            const totalToSave = p.target - p.base;
             const rem = totalToSave - saved;
-            const pct = Math.min(100, Math.floor((saved/totalToSave)*100));
+            const pct = Math.min(100, Math.floor((saved/totalToSave)*100)) || 0;
 
-            // Dash Update
-            document.getElementById('dash-goal-title').innerText = g.name.toUpperCase();
+            // Opdater Selector
+            const selector = document.getElementById('profile-selector');
+            selector.innerHTML = state.profiles.map((prof, i) => 
+                `<option value="${i}" ${i == state.activeProfileIndex ? 'selected' : ''}>${prof.name}</option>`
+            ).join('') + `<option value="new">+ NYT MÅL...</option>`;
+
+            // Dash
             document.getElementById('dash-rem').innerText = (rem > 0 ? rem : 0).toLocaleString() + " kr";
             document.getElementById('dash-bar').style.width = pct + "%";
             document.getElementById('dash-pct').innerText = pct + "% FÆRDIG";
-            document.getElementById('dash-total').innerText = "Mål: " + (g.target - g.base).toLocaleString() + " kr";
-            
-            // Streak
-            document.getElementById('streak-counter').innerText = "🔥 " + calculateStreak() + " dages streak";
+            document.getElementById('dash-goal-val').innerText = "Mål: " + p.target.toLocaleString() + " kr";
 
-            // Opgaver Render
-            document.getElementById('dash-tasks').innerHTML = state.tasks.map(t => `
-                <div onclick="activeTaskId=${t.id}; document.getElementById('camera-input').click()" class="ios-card p-6 flex justify-between items-center active:scale-95 transition border-l-[6px] border-blue-500 shadow-xl">
-                    <div class="space-y-1">
-                        <p class="font-black text-lg tracking-tight">${t.name}</p>
-                        <p class="text-[9px] font-black opacity-30 uppercase tracking-widest italic">Tryk for at sende bevis</p>
-                    </div>
-                    <div class="text-right">
-                        <span class="text-blue-500 font-black text-2xl tracking-tighter">${t.reward}.-</span>
-                    </div>
+            // Opgaver
+            document.getElementById('dash-tasks').innerHTML = p.tasks.map(t => `
+                <div onclick="activeTaskId=${t.id}; document.getElementById('camera-input').click()" class="ios-card p-5 flex justify-between items-center active:scale-95 transition border-l-4 border-blue-500">
+                    <span class="font-bold text-lg">${t.name}</span>
+                    <span class="text-blue-500 font-black text-xl">${t.reward}.-</span>
                 </div>
-            `).join('') || `
-                <div class="text-center py-10 opacity-20 border-2 border-dashed border-white/5 rounded-3xl italic font-bold">
-                    Ingen aktive opgaver lige nu...
-                </div>
-            `;
+            `).join('') || '<p class="text-center opacity-20 text-xs py-4">Ingen aktive opgaver</p>';
 
-            // Logbog Render
-            document.getElementById('dash-logs').innerHTML = state.logs.map(l => `
-                <div class="pt-8 first:pt-0">
-                    <div class="flex justify-between items-start mb-4">
-                        <div>
-                            <p class="font-black text-lg text-white/90 leading-none mb-2">${l.note}</p>
-                            <p class="opacity-30 text-[10px] font-black uppercase tracking-widest">${new Date(l.date).toLocaleDateString('da-DK', {day: 'numeric', month: 'short'})}</p>
-                        </div>
-                        <div class="text-green-500 font-black text-xl italic">+${l.amt} kr</div>
+            // Logbog
+            document.getElementById('dash-logs').innerHTML = p.logs.map((l, i) => `
+                <div onclick="showEvidence(${i})" class="pt-4 first:pt-0 flex justify-between items-center cursor-pointer active:opacity-50">
+                    <div>
+                        <p class="font-bold text-base leading-none mb-1">${l.note}</p>
+                        <p class="text-[9px] opacity-30 font-black uppercase tracking-tighter">${new Date(l.date).toLocaleDateString('da-DK')}</p>
                     </div>
-                    ${l.img ? `
-                        <div class="relative group">
-                            <img src="${l.img}" class="rounded-2xl w-full aspect-video object-cover border border-white/10 shadow-lg active:scale-[0.98] transition">
-                            <div class="absolute top-2 left-2 bg-black/40 backdrop-blur px-2 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest">Bevis Sikret</div>
-                        </div>
-                    ` : ''}
+                    <div class="flex items-center gap-3">
+                        <span class="text-green-500 font-black text-lg">+${l.amt}</span>
+                        ${l.img ? '<i class="fas fa-camera text-blue-500 text-[10px]"></i>' : ''}
+                    </div>
                 </div>
             `).join('');
+
+            // Edit Fields
+            document.getElementById('edit-goal-name').value = p.name;
+            document.getElementById('edit-goal-target').value = p.target;
+            document.getElementById('edit-goal-base').value = p.base;
         }
 
-        // --- FUNKTIONALITET ---
-        let activeTaskId = null;
+        function switchProfile(val) {
+            if (val === 'new') {
+                const name = prompt("Navn på nyt mål (f.eks. Ny PC):");
+                if (name) {
+                    state.profiles.push({ id: Date.now(), name, target: 1000, base: 0, logs: [], tasks: [] });
+                    state.activeProfileIndex = state.profiles.length - 1;
+                    sync();
+                }
+            } else {
+                state.activeProfileIndex = parseInt(val);
+                render();
+            }
+        }
+
+        function saveGoalEdit() {
+            const p = state.profiles[state.activeProfileIndex];
+            p.name = document.getElementById('edit-goal-name').value;
+            p.target = parseInt(document.getElementById('edit-goal-target').value);
+            p.base = parseInt(document.getElementById('edit-goal-base').value);
+            sync();
+            toggleModal('modal-edit-goal');
+        }
+
+        function showEvidence(index) {
+            const l = state.profiles[state.activeProfileIndex].logs[index];
+            if (!l.img) return;
+            document.getElementById('evidence-img').src = l.img;
+            document.getElementById('evidence-note').innerText = l.note;
+            toggleModal('modal-evidence');
+        }
 
         function addTask() {
             const name = document.getElementById('t-name').value;
             const reward = parseInt(document.getElementById('t-reward').value);
             if(!name || !reward) return;
-            
-            state.tasks.push({ id: Date.now(), name, reward });
-            syncData(); 
-            toggleModal('modal-task');
-            
-            document.getElementById('t-name').value = '';
-            document.getElementById('t-reward').value = '';
+            state.profiles[state.activeProfileIndex].tasks.push({ id: Date.now(), name, reward });
+            sync(); toggleModal('modal-task');
+            document.getElementById('t-name').value = ''; document.getElementById('t-reward').value = '';
         }
 
         function completeTask(event) {
             const file = event.target.files[0];
             if (!file) return;
-            
             const reader = new FileReader();
             reader.onload = async function(e) {
-                const t = state.tasks.find(x => x.id === activeTaskId);
-                
-                state.logs.unshift({ 
-                    amt: t.reward, 
-                    note: t.name, 
-                    date: new Date().toISOString(), 
-                    img: e.target.result 
-                });
-                
-                state.tasks = state.tasks.filter(x => x.id !== activeTaskId);
-                await syncData();
-                confetti({ 
-                    particleCount: 150, 
-                    spread: 70, 
-                    origin: { y: 0.7 },
-                    colors: ['#0a84ff', '#ffffff', '#facc15']
-                });
+                const p = state.profiles[state.activeProfileIndex];
+                const t = p.tasks.find(x => x.id === activeTaskId);
+                p.logs.unshift({ amt: t.reward, note: t.name, date: new Date().toISOString(), img: e.target.result });
+                p.tasks = p.tasks.filter(x => x.id !== activeTaskId);
+                await sync();
+                confetti({ particleCount: 200, origin: { y: 0.8 } });
             };
             reader.readAsDataURL(file);
         }
 
         function addManualMoney() {
-            const amt = parseInt(prompt("💸 Hvor meget har du tjent manuelt?"));
+            const amt = parseInt(prompt("Indtast beløb du har tjent:"));
             if(amt) {
-                const note = prompt("Hvad tjente du dem på?", "Ekstra indtjening");
-                state.logs.unshift({ 
-                    amt: amt, 
-                    note: note || "Manuel indbetaling", 
-                    date: new Date().toISOString() 
+                const note = prompt("Hvad tjente du dem på?", "Manuel indbetaling");
+                state.profiles[state.activeProfileIndex].logs.unshift({ 
+                    amt, note: note || "Manuel indbetaling", date: new Date().toISOString() 
                 });
-                syncData();
+                sync();
             }
-        }
-
-        function calculateStreak() {
-            if (!state.logs.length) return 0;
-            const dates = [...new Set(state.logs.map(l => l.date.split('T')[0]))].sort((a,b) => new Date(b) - new Date(a));
-            let streak = 0;
-            let current = new Date();
-            for(let d of dates) {
-                const diff = Math.floor((current - new Date(d)) / (1000 * 60 * 60 * 24));
-                if(diff <= 1) { streak++; current = new Date(d); } else break;
-            }
-            return streak;
-        }
-
-        async function generateShareImage() {
-            const g = state.goals[0];
-            const saved = state.logs.reduce((s, i) => s + i.amt, 0);
-            const rem = (g.target - g.base) - saved;
-            
-            document.getElementById('s-goal').innerText = g.name;
-            document.getElementById('s-rem').innerText = (rem > 0 ? rem : 0).toLocaleString() + " kr";
-            
-            const template = document.getElementById('share-template');
-            const canvas = await html2canvas(template, { backgroundColor: null, scale: 2 });
-            
-            document.getElementById('share-image-container').innerHTML = `<img src="${canvas.toDataURL()}" class="w-full">`;
-            document.getElementById('modal-share').classList.remove('hidden');
         }
 
         function toggleModal(id) { document.getElementById(id).classList.toggle('hidden'); }
 
-        // Start App
+        _supabase.channel('any').on('postgres_changes', { event: '*', schema: 'public', table: 'savings_data' }, payload => {
+            state = payload.new.json_data;
+            render();
+        }).subscribe();
+
         loadData();
     </script>
 </body>
