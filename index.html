@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Opsparing Pro</title>
+    <title>Opsparing Pro Max</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
@@ -15,7 +15,7 @@
         :root { --bg: #000; --card: #1c1c1e; --accent: #0a84ff; }
         body { 
             background: var(--bg); color: #fff; 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: -apple-system, sans-serif;
             padding-top: env(safe-area-inset-top);
             padding-bottom: env(safe-area-inset-bottom);
             min-height: 100vh;
@@ -24,22 +24,18 @@
         .ios-blur { background: rgba(28, 28, 30, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
         .hidden { display: none !important; }
         
-        input, select { 
+        input { 
             background: rgba(255,255,255,0.08) !important; 
             border: 1px solid rgba(255,255,255,0.1) !important; 
             color: white !important; 
             border-radius: 16px !important; 
             padding: 16px !important; 
             width: 100%;
-            outline: none;
+            font-size: 17px !important;
         }
 
-        .btn-ios {
-            background: #fff; color: #000;
-            font-weight: 800; border-radius: 20px;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .btn-ios:active { transform: scale(0.95); opacity: 0.8; }
+        .btn-main { background: #fff; color: #000; font-weight: 800; border-radius: 20px; transition: 0.2s; }
+        .btn-main:active { transform: scale(0.95); }
 
         .floating-add { 
             position: fixed; bottom: 40px; right: 25px; 
@@ -47,18 +43,19 @@
             border-radius: 50%; display: flex; align-items: center; 
             justify-content: center; font-size: 26px; color: black; 
             box-shadow: 0 15px 35px rgba(0,0,0,0.5); z-index: 100; 
-            transition: 0.2s;
         }
-        .floating-add:active { transform: scale(0.85); }
 
-        .progress-bar { transition: width 1.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .progress-fill { transition: width 1.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        
+        /* Til pænere billedvisning */
+        #full-img { max-width: 90vw; max-height: 80vh; border-radius: 20px; object-fit: contain; }
     </style>
 </head>
 <body class="p-4">
 
     <div class="max-w-md mx-auto space-y-6">
         
-        <header id="app-header" class="flex justify-between items-center py-4">
+        <header class="flex justify-between items-center py-4">
             <h1 class="text-3xl font-black italic uppercase tracking-tighter">Opsparing</h1>
             <div class="bg-[#1c1c1e] px-4 py-2 rounded-full border border-white/10 flex items-center gap-2">
                 <span class="text-orange-500">🔥</span>
@@ -67,12 +64,12 @@
         </header>
 
         <section id="view-login" class="space-y-6">
-            <p class="text-[10px] font-black opacity-30 uppercase tracking-[0.3em] px-2">Log ind</p>
-            <div onclick="showView('view-goals')" class="ios-card p-6 flex items-center gap-4 cursor-pointer active:scale-95 transition">
-                <img id="user-pfp" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200" class="w-16 h-16 rounded-full border-2 border-blue-500/20 shadow-xl">
+            <p class="text-[10px] font-black opacity-30 uppercase tracking-[0.3em] px-2">Vælg Bruger</p>
+            <div onclick="showView('view-goals')" class="ios-card p-6 flex items-center gap-4 cursor-pointer active:scale-95 transition shadow-2xl">
+                <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-700 rounded-full flex items-center justify-center text-2xl font-bold border-2 border-white/10 shadow-lg">J</div>
                 <div class="flex-1 text-left">
-                    <h2 id="user-name" class="text-xl font-bold">Jonathan</h2>
-                    <p class="text-[10px] opacity-40 font-black uppercase tracking-widest">Tryk for at fortsætte</p>
+                    <h2 class="text-xl font-bold">Jonathan</h2>
+                    <p class="text-[10px] opacity-40 font-black uppercase tracking-widest">Master Account</p>
                 </div>
                 <i class="fas fa-chevron-right opacity-20"></i>
             </div>
@@ -80,16 +77,15 @@
 
         <section id="view-goals" class="hidden space-y-6">
             <div class="flex justify-between items-center px-2">
-                <h2 class="text-[10px] font-black opacity-30 uppercase tracking-[0.3em]">Dine Mål</h2>
-                <button onclick="showView('view-login')" class="text-blue-500 text-xs font-bold">Skift profil</button>
+                <h2 class="text-[10px] font-black opacity-30 uppercase tracking-[0.3em]">Dine Projekter</h2>
+                <button onclick="showView('view-login')" class="text-blue-500 text-xs font-bold">Skift Bruger</button>
             </div>
             <div id="goals-list" class="grid gap-4"></div>
-            <button onclick="alert('Tilføj mål funktion kommer!')" class="w-full py-6 ios-card border border-dashed border-white/20 text-white/30 font-bold uppercase text-[10px] tracking-widest">+ Nyt Mål</button>
         </section>
 
         <section id="view-dash" class="hidden space-y-8 pb-32">
             <div class="flex justify-between items-center">
-                <button onclick="showView('view-goals')" class="text-blue-500 font-bold text-sm"><i class="fas fa-chevron-left mr-1"></i> Oversigt</button>
+                <button onclick="showView('view-goals')" class="text-blue-500 font-bold text-sm"><i class="fas fa-chevron-left mr-1"></i> Tilbage</button>
                 <h2 id="dash-goal-title" class="font-black text-[10px] uppercase opacity-30 tracking-[0.3em]">Mål</h2>
                 <button onclick="generateShareCard()" class="w-12 h-12 flex items-center justify-center bg-white/5 rounded-full text-blue-500">
                     <i class="fas fa-share-nodes"></i>
@@ -97,77 +93,71 @@
             </div>
 
             <div class="text-center space-y-4">
-                <p class="text-[10px] font-black opacity-30 uppercase tracking-[0.3em]">Du mangler kun</p>
+                <p class="text-[10px] font-black opacity-30 uppercase tracking-[0.3em]">Mangler stadig</p>
                 <h2 id="dash-rem" class="text-7xl font-black tracking-tighter">0 kr</h2>
                 <div class="px-4">
                     <div class="w-full bg-white/5 h-3 rounded-full overflow-hidden mb-3">
-                        <div id="dash-bar" class="progress-bar bg-blue-500 h-full shadow-[0_0_15px_rgba(59,130,246,0.5)]" style="width: 0%"></div>
+                        <div id="dash-bar" class="progress-fill bg-blue-500 h-full shadow-[0_0_15px_rgba(59,130,246,0.4)]" style="width: 0%"></div>
                     </div>
-                    <p id="dash-pct" class="text-[10px] font-black opacity-30 tracking-widest uppercase">0% GENNEMFØRT</p>
+                    <p id="dash-pct" class="text-[10px] font-black opacity-30 tracking-widest uppercase text-blue-400">0% FÆRDIG</p>
                 </div>
             </div>
 
             <div class="space-y-4">
                 <div class="flex justify-between items-center px-2">
-                    <h3 class="text-[10px] font-black opacity-40 uppercase tracking-[0.2em]">Dagens Opgaver</h3>
-                    <button onclick="toggleModal('modal-task')" class="bg-blue-500/10 text-blue-500 text-[10px] px-3 py-1.5 rounded-full font-bold tracking-widest">NY +</button>
+                    <h3 class="text-[10px] font-black opacity-40 uppercase tracking-[0.2em]">Aktive Opgaver</h3>
+                    <button onclick="toggleModal('modal-task')" class="bg-blue-500/10 text-blue-500 text-[10px] px-3 py-1.5 rounded-full font-bold tracking-widest">+ NY OPGAVE</button>
                 </div>
                 <div id="dash-tasks" class="space-y-3"></div>
             </div>
 
             <div class="space-y-4">
-                <h3 class="text-[10px] font-black opacity-40 uppercase tracking-[0.2em] px-2">Seneste logs</h3>
+                <h3 class="text-[10px] font-black opacity-40 uppercase tracking-[0.2em] px-2">Logbog & Billeder</h3>
                 <div id="dash-logs" class="ios-card p-6 space-y-4 divide-y divide-white/5"></div>
             </div>
         </section>
-
     </div>
 
     <button id="main-add-btn" onclick="toggleModal('modal-money')" class="floating-add hidden">
         <i class="fas fa-plus"></i>
     </button>
 
-    <div id="modal-money" class="hidden fixed inset-0 ios-blur z-[500] flex items-end sm:items-center justify-center">
-        <div class="bg-[#1c1c1e] w-full max-w-md p-8 rounded-t-[40px] space-y-6 border-t border-white/10 animate-slide-up">
-            <div class="w-12 h-1 bg-white/10 rounded-full mx-auto mb-2"></div>
-            <h2 class="text-2xl font-black text-center italic tracking-tight uppercase">Tilføj Penge 💰</h2>
+    <div id="modal-money" class="hidden fixed inset-0 ios-blur z-[500] flex items-end">
+        <div class="bg-[#1c1c1e] w-full p-8 rounded-t-[40px] space-y-6 border-t border-white/10">
+            <h2 class="text-2xl font-black text-center italic uppercase tracking-tighter">Log Indtægt</h2>
             <div class="space-y-4">
-                <div class="space-y-1">
-                    <label class="text-[10px] font-black opacity-30 uppercase ml-2">Hvor meget?</label>
-                    <input type="number" id="m-amt" placeholder="0 kr" inputmode="numeric" class="text-2xl font-black">
-                </div>
-                <div class="space-y-1">
-                    <label class="text-[10px] font-black opacity-30 uppercase ml-2">Hvad har du lavet?</label>
-                    <input type="text" id="m-note" placeholder="F.eks. Pant, Gave, Arbejde...">
-                </div>
-                <div class="space-y-1">
-                    <label class="text-[10px] font-black opacity-30 uppercase ml-2">Dato</label>
-                    <input type="date" id="m-date">
-                </div>
+                <input type="number" id="m-amt" placeholder="Beløb (kr)" inputmode="numeric" class="text-2xl font-bold text-center">
+                <input type="text" id="m-note" placeholder="Hvad har du lavet?">
+                <input type="date" id="m-date">
             </div>
-            <button onclick="addMoney()" class="w-full py-5 btn-ios text-lg">LOG PENGE</button>
+            <button onclick="addMoney()" class="w-full py-5 btn-main text-lg uppercase">Gem Indtægt</button>
             <button onclick="toggleModal('modal-money')" class="w-full py-2 text-white/20 font-bold uppercase text-[10px]">Annuller</button>
         </div>
     </div>
 
     <div id="modal-task" class="hidden fixed inset-0 ios-blur z-[500] flex items-center justify-center p-6">
-        <div class="ios-card p-8 w-full max-w-sm space-y-5 border border-white/10">
-            <h2 class="text-xl font-black italic uppercase tracking-tighter">Opret Ny Opgave</h2>
-            <div class="space-y-4">
-                <input type="text" id="t-name" placeholder="Opgavens navn">
-                <input type="number" id="t-reward" placeholder="Belønning i kr" inputmode="numeric">
-            </div>
-            <button onclick="addTask()" class="w-full py-5 btn-ios">OPRET OPGAVE</button>
+        <div class="ios-card p-8 w-full max-w-sm space-y-4 shadow-2xl">
+            <h2 class="text-xl font-black italic uppercase">Opret Opgave</h2>
+            <input type="text" id="t-name" placeholder="Navn (f.eks. Slå græs)">
+            <input type="number" id="t-reward" placeholder="Løn (kr)" inputmode="numeric">
+            <button onclick="addTask()" class="w-full py-4 btn-main uppercase">Opret Nu</button>
             <button onclick="toggleModal('modal-task')" class="w-full text-xs opacity-20 font-bold uppercase">Luk</button>
         </div>
     </div>
 
-    <input type="file" id="camera-input" class="hidden" accept="image/*" capture="environment" onchange="completeTask()">
+    <div id="modal-img" class="hidden fixed inset-0 bg-black/95 z-[600] flex items-center justify-center p-4" onclick="this.classList.add('hidden')">
+        <div class="text-center space-y-4">
+            <img id="full-img" src="">
+            <p class="text-white/40 font-bold text-xs uppercase">Tryk for at lukke</p>
+        </div>
+    </div>
+
+    <input type="file" id="camera-input" class="hidden" accept="image/*" capture="environment" onchange="completeTask(event)">
 
     <script>
-        const DB_KEY = "opsparing_final_V15";
+        const DB_KEY = "PRO_SAVINGS_FINAL_VERSION";
         let state = JSON.parse(localStorage.getItem(DB_KEY)) || {
-            user: { name: 'Jonathan', pfp: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200' },
+            user: { name: 'Jonathan' },
             goals: [{ id: 1, name: 'Flyveklub', target: 8500, base: 6020 }],
             logs: [],
             tasks: []
@@ -181,7 +171,6 @@
             document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
             document.getElementById(id).classList.remove('hidden');
             document.getElementById('main-add-btn').classList.toggle('hidden', id !== 'view-dash');
-            if(id === 'view-login') renderUser();
             if(id === 'view-goals') renderGoals();
         }
 
@@ -190,24 +179,18 @@
             if(id === 'modal-money') document.getElementById('m-date').valueAsDate = new Date();
         }
 
-        function renderUser() {
-            document.getElementById('user-name').innerText = state.user.name;
-            document.getElementById('user-pfp').src = state.user.pfp;
-            document.getElementById('streak-val').innerText = calculateStreak();
-        }
-
         function renderGoals() {
             const list = document.getElementById('goals-list');
             list.innerHTML = state.goals.map(g => {
                 const saved = state.logs.filter(l => l.goalId === g.id).reduce((s, i) => s + i.amt, 0);
                 const rem = (g.target - g.base) - saved;
                 return `
-                <div onclick="openDash(${g.id})" class="ios-card p-6 flex justify-between items-center cursor-pointer active:scale-[0.98] transition shadow-lg">
+                <div onclick="openDash(${g.id})" class="ios-card p-6 flex justify-between items-center active:scale-95 transition">
                     <div>
-                        <p class="text-[9px] font-black opacity-30 uppercase tracking-[0.2em] mb-1">${g.name}</p>
+                        <p class="text-[9px] font-black opacity-30 uppercase mb-1 tracking-widest">${g.name}</p>
                         <h3 class="text-3xl font-black tracking-tighter">${(rem > 0 ? rem : 0).toLocaleString()} kr</h3>
                     </div>
-                    <i class="fas fa-chevron-right text-blue-500/30"></i>
+                    <i class="fas fa-chevron-right text-blue-500/20"></i>
                 </div>`;
             }).join('');
         }
@@ -224,41 +207,41 @@
             document.getElementById('dash-goal-title').innerText = g.name;
             document.getElementById('dash-rem').innerText = (rem > 0 ? rem : 0).toLocaleString() + " kr";
             document.getElementById('dash-bar').style.width = pct + "%";
-            document.getElementById('dash-pct').innerText = pct + "% GENNEMFØRT";
+            document.getElementById('dash-pct').innerText = pct + "% FÆRDIG";
             document.getElementById('streak-val').innerText = calculateStreak();
 
-            // Opgaver med kamera-klik
             document.getElementById('dash-tasks').innerHTML = state.tasks.filter(t => t.goalId === activeGoalId).map(t => `
-                <div onclick="activeTaskId=${t.id}; document.getElementById('camera-input').click()" class="ios-card p-5 flex justify-between items-center active:bg-white/5 transition border-l-4 border-blue-500">
+                <div onclick="activeTaskId=${t.id}; document.getElementById('camera-input').click()" class="ios-card p-5 flex justify-between items-center active:bg-white/5 border-l-4 border-blue-500">
                     <div>
                         <p class="font-bold text-sm">${t.name}</p>
-                        <p class="text-[9px] font-black opacity-30 uppercase tracking-widest">Klik for at færdiggøre</p>
+                        <p class="text-[9px] font-black opacity-20 uppercase tracking-widest">Kamera-bevis kræves</p>
                     </div>
-                    <span class="bg-blue-500/10 text-blue-500 px-4 py-1 rounded-full font-black text-xs">${t.reward}.-</span>
+                    <span class="bg-blue-500/10 text-blue-400 px-4 py-1 rounded-full font-black text-xs">${t.reward}.-</span>
                 </div>
-            `).join('') || '<p class="text-center opacity-20 text-[10px] py-4 italic uppercase tracking-widest">Ingen aktive opgaver</p>';
+            `).join('') || '<p class="text-center opacity-20 text-[10px] py-4 italic uppercase">Ingen aktive opgaver</p>';
 
-            // Historik
             document.getElementById('dash-logs').innerHTML = state.logs.filter(l => l.goalId === activeGoalId).map(l => `
-                <div class="flex justify-between items-center pt-4 first:pt-0">
-                    <div>
-                        <p class="font-bold text-sm text-white/90">${l.note}</p>
-                        <p class="opacity-30 uppercase font-black text-[9px] tracking-tighter">${new Date(l.date).toLocaleDateString('da-DK')}</p>
+                <div class="pt-4 first:pt-0">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="font-bold text-sm">${l.note}</p>
+                            <p class="opacity-30 uppercase font-black text-[9px] tracking-tighter">${new Date(l.date).toLocaleDateString('da-DK')}</p>
+                        </div>
+                        <span class="font-black text-green-500">+${l.amt} kr</span>
                     </div>
-                    <span class="font-black text-green-500">+${l.amt} kr</span>
+                    ${l.img ? `<button onclick="viewImg('${l.img}')" class="mt-2 text-[10px] font-black text-blue-500 uppercase flex items-center gap-1"><i class="fas fa-camera"></i> Se bevis</button>` : ''}
                 </div>
-            `).join('') || '<p class="text-center opacity-20 py-2 text-[10px] uppercase font-black">Tom logbog</p>';
+            `).join('') || '<p class="text-center opacity-20 py-2 text-[10px] font-black uppercase">Tom logbog</p>';
         }
 
         function addMoney() {
             const amt = parseInt(document.getElementById('m-amt').value);
-            const note = document.getElementById('m-note').value || 'Penge lagt til';
+            const note = document.getElementById('m-note').value || 'Indbetaling';
             const date = document.getElementById('m-date').value;
             if(!amt || !date) return;
-            state.logs.unshift({ goalId: activeGoalId, amt, note, date });
-            save(); toggleModal('modal-money');
-            confetti({ particleCount: 150, origin: { y: 0.8 }, colors: ['#facc15', '#3b82f6', '#ffffff'] });
-            renderDash();
+            state.logs.unshift({ goalId: activeGoalId, amt, note, date, img: null });
+            save(); toggleModal('modal-money'); renderDash();
+            confetti({ particleCount: 150, origin: { y: 0.8 } });
             document.getElementById('m-amt').value = ''; document.getElementById('m-note').value = '';
         }
 
@@ -267,18 +250,30 @@
             const reward = document.getElementById('t-reward').value;
             if(!name || !reward) return;
             state.tasks.push({ id: Date.now(), goalId: activeGoalId, name, reward: parseInt(reward) });
-            save(); toggleModal('modal-task');
-            renderDash();
+            save(); toggleModal('modal-task'); renderDash();
             document.getElementById('t-name').value = ''; document.getElementById('t-reward').value = '';
         }
 
-        function completeTask() {
-            const t = state.tasks.find(x => x.id === activeTaskId);
-            state.logs.unshift({ goalId: activeGoalId, amt: t.reward, note: t.name, date: new Date().toISOString().split('T')[0] });
-            state.tasks = state.tasks.filter(x => x.id !== activeTaskId);
-            save(); 
-            confetti({ particleCount: 200, spread: 70, origin: { y: 0.6 } });
-            renderDash();
+        function completeTask(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const t = state.tasks.find(x => x.id === activeTaskId);
+                state.logs.unshift({ 
+                    goalId: activeGoalId, amt: t.reward, note: t.name, 
+                    date: new Date().toISOString().split('T')[0], img: e.target.result 
+                });
+                state.tasks = state.tasks.filter(x => x.id !== activeTaskId);
+                save(); renderDash();
+                confetti({ particleCount: 200, spread: 80 });
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function viewImg(src) {
+            document.getElementById('full-img').src = src;
+            document.getElementById('modal-img').classList.remove('hidden');
         }
 
         function calculateStreak() {
@@ -295,11 +290,11 @@
             const g = state.goals.find(x => x.id === activeGoalId);
             const saved = state.logs.filter(l => l.goalId === activeGoalId).reduce((s, i) => s + i.amt, 0);
             const rem = (g.target - g.base) - saved;
-            const text = `🚀 MÅL OPDATERING: Jeg mangler kun ${(rem > 0 ? rem : 0).toLocaleString()} kr til ${g.name.toUpperCase()}! 🔥 Streak: ${calculateStreak()} dage. #OpsparingPro`;
-            if (navigator.share) { navigator.share({ text: text }); } else { alert("Kopieret til udklipsholder!"); navigator.clipboard.writeText(text); }
+            const text = `💰 Status: Mangler ${(rem > 0 ? rem : 0).toLocaleString()} kr til ${g.name}! 🔥 Streak: ${calculateStreak()} dage. #OpsparingPro`;
+            if (navigator.share) { navigator.share({ text: text }); } else { alert("Kopieret!"); navigator.clipboard.writeText(text); }
         }
 
-        renderUser();
+        showView('view-login');
     </script>
 </body>
 </html>
