@@ -3,128 +3,162 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Savings Hub</title>
+    <title>Opsparing</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         body { background: #121212; color: #e0e0e0; font-family: 'Inter', sans-serif; }
-        .gray-card { background: #1e1e1e; border: 1px solid #2a2a2a; border-radius: 16px; }
-        .input-gray { background: #2a2a2a; border: 1px solid #3a3a3a; border-radius: 8px; color: white; padding: 8px 12px; outline: none; }
-        .input-gray:focus { border-color: #4a4a4a; }
-        .btn-primary { background: #e0e0e0; color: #121212; font-weight: 600; border-radius: 8px; padding: 8px 16px; transition: 0.2s; }
-        .btn-primary:hover { background: #ffffff; }
+        .gray-card { background: #1e1e1e; border: 1px solid #2a2a2a; border-radius: 20px; transition: 0.2s; }
+        .gray-card:hover { border-color: #444; }
+        .input-gray { background: #2a2a2a; border: 1px solid #3a3a3a; border-radius: 12px; color: white; padding: 12px; outline: none; width: 100%; }
+        .btn-main { background: #e0e0e0; color: #121212; font-weight: 700; border-radius: 12px; padding: 12px; transition: 0.2s; text-align: center; width: 100%; }
+        .btn-main:hover { background: #fff; transform: translateY(-2px); }
+        .hidden { display: none; }
     </style>
 </head>
-<body class="p-4 md:p-10">
+<body class="p-6">
 
-    <div class="max-w-4xl mx-auto space-y-10">
+    <div class="max-w-md mx-auto">
         
-        <header class="flex justify-between items-center">
-            <h1 class="text-2xl font-bold tracking-tight">Savings<span class="text-gray-500">Hub</span></h1>
-            <button onclick="openSettings()" class="text-gray-400 hover:text-white transition">
-                <i class="fas fa-cog"></i>
-            </button>
-        </header>
-
-        <section id="goals-grid" class="grid md:grid-cols-2 gap-6">
-            </section>
-
-        <div class="grid md:grid-cols-2 gap-10 pt-10 border-t border-[#2a2a2a]">
-            <section class="space-y-4">
-                <h2 class="text-xs font-bold text-gray-500 uppercase tracking-widest">Aktive Opgaver</h2>
-                <div id="task-list" class="space-y-2"></div>
-                <button onclick="toggleModal('task-modal')" class="text-xs text-gray-400 hover:text-white underline">+ Ny opgave</button>
-            </section>
-
-            <section class="space-y-4">
-                <h2 class="text-xs font-bold text-gray-500 uppercase tracking-widest">Seneste Indtjening</h2>
-                <div id="money-log" class="gray-card divide-y divide-[#2a2a2a] overflow-hidden"></div>
-            </section>
-        </div>
-    </div>
-
-    <div id="settings-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-6">
-        <div class="gray-card p-8 w-full max-w-md space-y-6">
-            <h2 class="text-xl font-bold">Administrer Mål</h2>
-            <div id="goal-settings-list" class="space-y-4 max-h-60 overflow-y-auto"></div>
-            <div class="pt-4 border-t border-[#2a2a2a] space-y-2">
-                <input type="text" id="new-goal-name" placeholder="Nyt mål navn" class="w-full input-gray text-sm">
-                <input type="number" id="new-goal-price" placeholder="Pris (kr)" class="w-full input-gray text-sm">
-                <button onclick="addGoal()" class="w-full btn-primary text-sm">Tilføj Nyt Mål</button>
+        <section id="step-user" class="space-y-8 pt-20">
+            <div class="text-center">
+                <h1 class="text-3xl font-bold">Velkommen</h1>
+                <p class="text-gray-500 mt-2">Vælg profil for at fortsætte</p>
             </div>
-            <button onclick="toggleModal('settings-modal')" class="w-full text-xs text-gray-500 hover:text-white pt-2">Luk</button>
+            <div class="grid gap-4">
+                <button onclick="selectUser('Jonathan')" class="gray-card p-6 flex items-center gap-4 hover:bg-[#252525]">
+                    <div class="w-12 h-12 bg-gray-700 rounded-full flex items-center justify-center text-xl font-bold">J</div>
+                    <span class="text-xl font-medium">Jonathan</span>
+                </button>
+                <button onclick="alert('Kun Jonathan er aktiv lige nu')" class="border border-dashed border-[#333] p-6 rounded-2xl text-gray-600 text-center">
+                    + Tilføj person
+                </button>
+            </div>
+        </section>
+
+        <section id="step-savings" class="hidden space-y-8 pt-10">
+            <div class="flex justify-between items-center">
+                <button onclick="goBack('step-user')" class="text-gray-500"><i class="fas fa-arrow-left"></i></button>
+                <h1 class="text-xl font-bold text-center">Mine Opsparinger</h1>
+                <div class="w-5"></div>
+            </div>
+            <div id="savings-list" class="grid gap-4">
+                </div>
+            <button onclick="toggleModal('goal-modal')" class="text-gray-500 text-sm underline w-full text-center">+ Opret ny opsparing</button>
+        </section>
+
+        <section id="step-dashboard" class="hidden space-y-8">
+            <div class="flex justify-between items-center">
+                <button onclick="goBack('step-savings')" class="text-gray-500"><i class="fas fa-arrow-left"></i></button>
+                <h1 id="current-goal-name" class="font-bold uppercase tracking-widest text-xs text-gray-500 text-center">Opsparing</h1>
+                <button onclick="toggleModal('settings-modal')" class="text-gray-500"><i class="fas fa-cog"></i></button>
+            </div>
+
+            <div class="text-center py-10">
+                <p class="text-gray-500 text-xs uppercase tracking-widest mb-1">Mangler stadig</p>
+                <h2 id="display-remaining" class="text-6xl font-bold tracking-tighter">0 kr</h2>
+            </div>
+
+            <div class="space-y-6">
+                <div class="flex justify-between items-center border-b border-[#2a2a2a] pb-2">
+                    <h3 class="text-[10px] font-bold text-gray-500 uppercase">Opgaver</h3>
+                    <button onclick="toggleModal('task-modal')" class="text-xs text-blue-500">+ Ny</button>
+                </div>
+                <div id="task-list" class="space-y-3"></div>
+            </div>
+
+            <div class="space-y-4">
+                <h3 class="text-[10px] font-bold text-gray-500 uppercase border-b border-[#2a2a2a] pb-2">Logbog</h3>
+                <div id="money-log" class="space-y-2"></div>
+            </div>
+        </section>
+
+    </div>
+
+    <div id="goal-modal" class="hidden fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-6">
+        <div class="gray-card p-8 w-full max-w-sm space-y-4">
+            <h2 class="text-xl font-bold">Ny Opsparing</h2>
+            <input type="text" id="new-goal-title" placeholder="Navn (f.eks. Flyveklub)" class="input-gray">
+            <input type="number" id="new-goal-price" placeholder="Mål (kr)" class="input-gray">
+            <button onclick="createNewGoal()" class="btn-main">Opret</button>
+            <button onclick="toggleModal('goal-modal')" class="w-full text-gray-500 text-sm">Annuller</button>
         </div>
     </div>
 
-    <div id="task-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-6">
-        <div class="gray-card p-8 w-full max-w-md space-y-4">
+    <div id="task-modal" class="hidden fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-6">
+        <div class="gray-card p-8 w-full max-w-sm space-y-4">
             <h2 class="text-xl font-bold">Opret Opgave</h2>
-            <input type="text" id="t-name" placeholder="Hvad skal du lave?" class="w-full input-gray">
-            <input type="number" id="t-reward" placeholder="Løn (kr)" class="w-full input-gray">
-            <div class="space-y-1">
-                <label class="text-[10px] text-gray-500 uppercase">Hvilket mål skal pengene gå til?</label>
-                <select id="t-goal-select" class="w-full input-gray text-sm"></select>
-            </div>
-            <div class="flex gap-2">
-                <button onclick="saveTask()" class="flex-1 btn-primary">Opret</button>
-                <button onclick="toggleModal('task-modal')" class="flex-1 text-gray-500">Fortryd</button>
-            </div>
+            <input type="text" id="t-name" placeholder="Hvad skal du lave?" class="input-gray">
+            <input type="number" id="t-reward" placeholder="Løn (kr)" class="input-gray">
+            <button onclick="saveTask()" class="btn-main">Opret Opgave</button>
+            <button onclick="toggleModal('task-modal')" class="w-full text-gray-500 text-sm">Annuller</button>
         </div>
     </div>
 
     <div id="image-modal" class="hidden fixed inset-0 bg-black/95 z-[60] flex items-center justify-center p-4" onclick="this.classList.add('hidden')">
-        <img id="preview-img" src="" class="max-w-full max-h-full rounded-lg shadow-2xl">
+        <img id="preview-img" src="" class="max-w-full max-h-full rounded-xl shadow-2xl border border-white/10">
     </div>
 
     <input type="file" id="camera-input" class="hidden" accept="image/*" onchange="processCapture(this)">
 
     <script>
-        let goals = JSON.parse(localStorage.getItem('h_goals')) || [
-            { id: 1, name: 'Flyveklub', target: 8500, discount: 1100, other: 4920 }
-        ];
-        let logs = JSON.parse(localStorage.getItem('h_logs')) || [
-            { id: 101, goalId: 1, amt: 420, note: 'Startbeløb', date: '09-04-2026', img: null }
-        ];
-        let tasks = JSON.parse(localStorage.getItem('h_tasks')) || [];
+        let goals = JSON.parse(localStorage.getItem('ops_goals')) || [{ id: 1, name: 'Flyveklub', target: 8500, discount: 1100, other: 4920 }];
+        let logs = JSON.parse(localStorage.getItem('ops_logs')) || [{ id: 101, goalId: 1, amt: 420, note: 'Startbeløb', date: '09-04-2026', img: null }];
+        let tasks = JSON.parse(localStorage.getItem('ops_tasks')) || [];
+        
+        let currentGoalId = null;
         let activeTaskId = null;
 
         function toggleModal(id) { document.getElementById(id).classList.toggle('hidden'); }
 
-        function openSettings() {
-            const list = document.getElementById('goal-settings-list');
-            list.innerHTML = goals.map(g => `
-                <div class="flex items-center gap-2">
-                    <input type="text" onchange="updateGoal(${g.id}, 'name', this.value)" value="${g.name}" class="flex-1 input-gray text-xs">
-                    <input type="number" onchange="updateGoal(${g.id}, 'target', this.value)" value="${g.target}" class="w-20 input-gray text-xs">
-                    <button onclick="deleteGoal(${g.id})" class="text-red-900 hover:text-red-500 ml-2"><i class="fas fa-trash"></i></button>
-                </div>
-            `).join('');
-            toggleModal('settings-modal');
+        function selectUser(name) {
+            document.getElementById('step-user').classList.add('hidden');
+            document.getElementById('step-savings').classList.remove('hidden');
+            renderSavingsList();
         }
 
-        function addGoal() {
-            const name = document.getElementById('new-goal-name').value;
+        function selectGoal(id) {
+            currentGoalId = id;
+            document.getElementById('step-savings').classList.add('hidden');
+            document.getElementById('step-dashboard').classList.remove('hidden');
+            renderDashboard();
+        }
+
+        function goBack(stepId) {
+            document.getElementById('step-user').classList.add('hidden');
+            document.getElementById('step-savings').classList.add('hidden');
+            document.getElementById('step-dashboard').classList.add('hidden');
+            document.getElementById(stepId).classList.remove('hidden');
+        }
+
+        function renderSavingsList() {
+            const list = document.getElementById('savings-list');
+            list.innerHTML = goals.map(g => {
+                const saved = logs.filter(l => l.goalId === g.id).reduce((s, i) => s + i.amt, 0);
+                const rem = g.target - (g.discount || 0) - (g.other || 0) - saved;
+                return `
+                    <button onclick="selectGoal(${g.id})" class="gray-card p-6 text-left">
+                        <p class="text-xs text-gray-500 uppercase font-bold tracking-widest">${g.name}</p>
+                        <h3 class="text-2xl font-bold">${rem.toLocaleString()} kr <span class="text-gray-600 text-sm">tilbage</span></h3>
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function createNewGoal() {
+            const name = document.getElementById('new-goal-title').value;
             const price = document.getElementById('new-goal-price').value;
             if(!name || !price) return;
-            goals.push({ id: Date.now(), name, target: parseInt(price), discount: 0, other: 0 });
-            save(); render();
+            goals.push({ id: Date.now(), name, target: parseInt(price) });
+            save(); renderSavingsList(); toggleModal('goal-modal');
         }
-
-        function updateGoal(id, key, val) {
-            const g = goals.find(x => x.id === id);
-            g[key] = key === 'name' ? val : parseInt(val);
-            save(); render();
-        }
-
-        function deleteGoal(id) { goals = goals.filter(g => g.id !== id); save(); render(); openSettings(); }
 
         function saveTask() {
             const name = document.getElementById('t-name').value;
             const reward = document.getElementById('t-reward').value;
-            const goalId = document.getElementById('t-goal-select').value;
             if(!name || !reward) return;
-            tasks.push({ id: Date.now(), name, reward: parseInt(reward), goalId: parseInt(goalId) });
-            save(); render(); toggleModal('task-modal');
+            tasks.push({ id: Date.now(), name, reward: parseInt(reward), goalId: currentGoalId });
+            save(); renderDashboard(); toggleModal('task-modal');
         }
 
         function startComplete(id) { activeTaskId = id; document.getElementById('camera-input').click(); }
@@ -136,14 +170,14 @@
                 const task = tasks.find(t => t.id === activeTaskId);
                 logs.unshift({
                     id: Date.now(),
-                    goalId: task.goalId,
+                    goalId: currentGoalId,
                     amt: task.reward,
                     note: task.name,
                     date: new Date().toLocaleDateString('da-DK'),
                     img: e.target.result
                 });
                 tasks = tasks.filter(t => t.id !== activeTaskId);
-                save(); render();
+                save(); renderDashboard();
             };
             reader.readAsDataURL(input.files[0]);
         }
@@ -153,56 +187,37 @@
             toggleModal('image-modal');
         }
 
-        function deleteLog(id) { logs = logs.filter(l => l.id !== id); save(); render(); }
-
         function save() {
-            localStorage.setItem('h_goals', JSON.stringify(goals));
-            localStorage.setItem('h_logs', JSON.stringify(logs));
-            localStorage.setItem('h_tasks', JSON.stringify(tasks));
+            localStorage.setItem('ops_goals', JSON.stringify(goals));
+            localStorage.setItem('ops_logs', JSON.stringify(logs));
+            localStorage.setItem('ops_tasks', JSON.stringify(tasks));
         }
 
-        function render() {
-            const grid = document.getElementById('goals-grid');
-            grid.innerHTML = goals.map(g => {
-                const saved = logs.filter(l => l.goalId === g.id).reduce((s, i) => s + i.amt, 0);
-                const remaining = g.target - g.discount - g.other - saved;
-                return `
-                    <div class="gray-card p-6 space-y-1">
-                        <p class="text-[10px] text-gray-500 uppercase font-bold tracking-widest">${g.name}</p>
-                        <h3 class="text-3xl font-bold">${remaining.toLocaleString()} kr</h3>
-                        <p class="text-[10px] text-gray-600 font-mono italic">Mål: ${g.target} | Sparet: ${saved}</p>
-                    </div>
-                `;
-            }).join('');
+        function renderDashboard() {
+            const g = goals.find(x => x.id === currentGoalId);
+            document.getElementById('current-goal-name').innerText = g.name;
 
-            const tSelect = document.getElementById('t-goal-select');
-            tSelect.innerHTML = goals.map(g => `<option value="${g.id}">${g.name}</option>`).join('');
+            const saved = logs.filter(l => l.goalId === g.id).reduce((s, i) => s + i.amt, 0);
+            const remaining = g.target - (g.discount || 0) - (g.other || 0) - saved;
+            document.getElementById('display-remaining').innerText = remaining.toLocaleString() + " kr";
 
-            document.getElementById('task-list').innerHTML = tasks.map(t => `
-                <div class="gray-card p-3 flex justify-between items-center">
-                    <span class="text-xs font-medium">${t.name} <span class="text-blue-500 ml-2">${t.reward}.-</span></span>
-                    <button onclick="startComplete(${t.id})" class="text-[10px] bg-blue-500/10 text-blue-500 px-3 py-1 rounded-full uppercase font-bold">Udfør & Foto</button>
+            document.getElementById('task-list').innerHTML = tasks.filter(t => t.goalId === currentGoalId).map(t => `
+                <div class="gray-card p-4 flex justify-between items-center">
+                    <span class="font-medium text-sm">${t.name} <span class="text-blue-500 ml-1">${t.reward}.-</span></span>
+                    <button onclick="startComplete(${t.id})" class="text-[10px] bg-blue-500/10 text-blue-500 px-3 py-1 rounded-full font-bold uppercase">Udfør & Foto</button>
                 </div>
             `).join('');
 
-            document.getElementById('money-log').innerHTML = logs.map(l => `
-                <div class="p-3 flex justify-between items-center group text-xs">
+            document.getElementById('money-log').innerHTML = logs.filter(l => l.goalId === currentGoalId).map(l => `
+                <div class="flex justify-between items-center text-sm py-2">
                     <div class="flex items-center gap-3">
-                        ${l.img ? `<button onclick="showImg('${l.img}')" class="text-blue-500 hover:text-white"><i class="fas fa-paperclip"></i></button>` : '<i class="fas fa-coins text-gray-700"></i>'}
-                        <div>
-                            <p class="font-bold">${l.note}</p>
-                            <p class="text-[9px] text-gray-600 uppercase">${l.date}</p>
-                        </div>
+                        ${l.img ? `<button onclick="showImg('${l.img}')" class="text-blue-500"><i class="fas fa-paperclip"></i></button>` : '<i class="fas fa-check text-gray-700 text-[10px]"></i>'}
+                        <span>${l.note}</span>
                     </div>
-                    <div class="flex items-center gap-4">
-                        <span class="font-bold text-gray-200">${l.amt}.-</span>
-                        <button onclick="deleteLog(${l.id})" class="text-gray-800 group-hover:text-red-500 transition"><i class="fas fa-times"></i></button>
-                    </div>
+                    <span class="font-bold text-gray-400">${l.amt} kr</span>
                 </div>
             `).join('');
         }
-
-        render();
     </script>
 </body>
 </html>
