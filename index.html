@@ -3,139 +3,167 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Glider Logbook PRO</title>
+    <title>Opsparings Tracker - Flyveklub Medlemskab</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
-<body class="bg-slate-950 text-white font-sans min-h-screen">
+<body class="bg-[#0a0a0a] text-white font-sans min-h-screen">
 
-    <nav class="p-4 border-b border-slate-800 flex justify-between items-center max-w-6xl mx-auto bg-slate-950 sticky top-0 z-50">
-        <div class="text-xl font-bold flex items-center gap-2 italic">
-            <i class="fas fa-paper-plane text-blue-500"></i> GLIDER LOG
+    <nav class="p-6 bg-[#0f0f0f] border-b border-gray-800">
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
+            <h1 class="text-[#ff9f1c] font-bold text-xl uppercase tracking-widest">Klub Medlemskab</h1>
+            <div class="text-xs text-gray-500 uppercase">Status & Fremdrift</div>
         </div>
-        <button onclick="alert('Google Login opsættes i næste fase!')" class="bg-white text-black px-4 py-1.5 rounded-full font-bold text-sm flex items-center gap-2">
-            <i class="fab fa-google"></i> Login
-        </button>
     </nav>
 
-    <main class="max-w-6xl mx-auto px-4 py-8">
-        
-        <div class="grid lg:grid-cols-3 gap-8">
-            
-            <div class="lg:col-span-2 space-y-6">
-                <div class="flex justify-between items-end">
-                    <div>
-                        <h1 class="text-3xl font-bold">Logbog</h1>
-                        <p class="text-slate-500 text-sm">Dine seneste flyvninger</p>
-                    </div>
-                    <button onclick="addLogEntry()" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-xl text-sm font-bold">
-                        <i class="fas fa-plus mr-2"></i>Ny Log
-                    </button>
-                </div>
+    <main class="max-w-4xl mx-auto p-4 md:p-8 space-y-8">
 
-                <div class="bg-slate-900 rounded-3xl border border-slate-800 overflow-hidden shadow-2xl">
-                    <table class="w-full text-left">
-                        <thead class="bg-slate-800/50 text-slate-400 text-[10px] uppercase tracking-widest">
-                            <tr>
-                                <th class="p-4">Flytype</th>
-                                <th class="p-4">Registrering</th>
-                                <th class="p-4">Varighed</th>
-                                <th class="p-4 text-right">Handling</th>
-                            </tr>
-                        </thead>
-                        <tbody id="logTableBody">
-                            </tbody>
-                    </table>
-                </div>
-
-                <div class="bg-gradient-to-br from-indigo-900 to-blue-900 p-6 rounded-3xl border border-blue-400/20 flex items-center justify-between shadow-xl">
-                    <div>
-                        <h3 class="font-bold text-xl">Snap & Log AI</h3>
-                        <p class="text-blue-200 text-sm">Tag billede af din papir-logbog</p>
-                    </div>
-                    <label class="cursor-pointer bg-white/10 hover:bg-white/20 p-4 rounded-2xl transition border border-white/20">
-                        <i class="fas fa-camera text-2xl"></i>
-                        <input type="file" accept="image/*" class="hidden" onchange="processImage(this)">
-                    </label>
-                </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="bg-[#141414] p-6 rounded-xl border border-gray-800">
+                <p class="text-gray-500 text-xs uppercase mb-1">Mål (Total)</p>
+                <p class="text-2xl font-bold text-[#ff9f1c]">4.920 kr</p>
             </div>
-
-            <div class="space-y-6">
-                <h2 class="text-xl font-bold">Mine Fly</h2>
-                <div id="aircraftContainer" class="space-y-4">
-                    </div>
+            <div class="bg-[#141414] p-6 rounded-xl border border-gray-800">
+                <p class="text-gray-500 text-xs uppercase mb-1">Opsparet</p>
+                <p id="display-opsparet" class="text-2xl font-bold text-green-500">0 kr</p>
             </div>
-
+            <div class="bg-[#141414] p-6 rounded-xl border border-gray-800">
+                <p class="text-gray-500 text-xs uppercase mb-1">Mangler stadig</p>
+                <p id="display-mangler" class="text-2xl font-bold text-red-500">4.920 kr</p>
+            </div>
         </div>
+
+        <section class="space-y-4">
+            <div class="bg-[#ff9f1c] text-black px-4 py-2 font-bold uppercase text-sm flex justify-between items-center rounded-t-lg">
+                <span><i class="fas fa-piggy-bank mr-2"></i> Opsparing - Hvad har du tjent?</span>
+                <button onclick="toggleModal('money-modal')" class="bg-black text-white px-3 py-1 rounded text-xs hover:bg-gray-800">+ Tilføj beløb</button>
+            </div>
+            <div class="bg-[#141414] border border-gray-800 rounded-b-lg overflow-hidden">
+                <table class="w-full text-left text-sm">
+                    <thead class="bg-[#1a1a1a] text-gray-400 uppercase text-[10px]">
+                        <tr>
+                            <th class="p-4">Dato</th>
+                            <th class="p-4">Beløb (kr)</th>
+                            <th class="p-4">Note</th>
+                            <th class="p-4">Indsat af</th>
+                            <th class="p-4"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="money-table">
+                        </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="space-y-4">
+            <div class="bg-[#ff9f1c] text-black px-4 py-2 font-bold uppercase text-sm rounded-t-lg">
+                <i class="fas fa-tasks mr-2"></i> Opgaver - Hvordan tjener du mere?
+            </div>
+            <div class="bg-[#141414] border border-gray-800 rounded-b-lg p-6">
+                <div id="task-list" class="space-y-3">
+                    </div>
+                <div class="mt-6 flex gap-2">
+                    <input type="text" id="task-input" placeholder="Ny opgave (f.feks. Slå græs)..." class="bg-[#1a1a1a] border border-gray-700 rounded px-4 py-2 text-sm w-full outline-none focus:border-[#ff9f1c]">
+                    <button onclick="addTask()" class="bg-[#ff9f1c] text-black px-4 py-2 rounded font-bold text-sm hover:bg-[#e68a17]">Tilføj</button>
+                </div>
+            </div>
+        </section>
+
     </main>
 
-    <script>
-        // Standard Fly Data
-        const aircrafts = [
-            { type: 'LS4', reg: 'OY-XRG', img: 'https://images.unsplash.com/photo-1517400508447-f8dd518b86db?q=80&w=300', span: '15m' },
-            { type: 'ASK21', reg: 'OY-XSC', img: 'https://images.unsplash.com/photo-1464039397811-476f652a343b?q=80&w=300', span: '17m' },
-            { type: 'Duo Discus', reg: 'OY-XLT', img: 'https://images.unsplash.com/photo-1540962351504-03099e0a75c3?q=80&w=300', span: '20m' }
-        ];
-
-        // Funktion til at vise fly
-        function displayAircrafts() {
-            const container = document.getElementById('aircraftContainer');
-            container.innerHTML = aircrafts.map(ac => `
-                <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden hover:border-blue-500 transition group cursor-pointer">
-                    <img src="${ac.img}" class="w-full h-24 object-cover opacity-60 group-hover:opacity-100 transition">
-                    <div class="p-3">
-                        <div class="flex justify-between">
-                            <span class="font-bold">${ac.reg}</span>
-                            <span class="text-[10px] bg-slate-800 px-2 py-0.5 rounded text-slate-400">${ac.type}</span>
-                        </div>
-                        <p class="text-[10px] text-slate-500 mt-1">Spændvidde: ${ac.span}</p>
-                    </div>
+    <div id="money-modal" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center p-4 z-50">
+        <div class="bg-[#141414] border border-gray-800 p-8 rounded-2xl w-full max-w-md">
+            <h2 class="text-xl font-bold mb-6 text-[#ff9f1c]">Registrer indtjening</h2>
+            <div class="space-y-4">
+                <input type="number" id="input-amount" placeholder="Beløb i kr" class="w-full bg-[#1a1a1a] border border-gray-700 p-3 rounded">
+                <input type="text" id="input-note" placeholder="Hvad har du lavet?" class="w-full bg-[#1a1a1a] border border-gray-700 p-3 rounded">
+                <input type="text" id="input-who" placeholder="Hvem har betalt?" class="w-full bg-[#1a1a1a] border border-gray-700 p-3 rounded">
+                <div class="flex gap-2">
+                    <button onclick="saveMoney()" class="flex-1 bg-[#ff9f1c] text-black font-bold py-3 rounded">Gem</button>
+                    <button onclick="toggleModal('money-modal')" class="flex-1 bg-gray-800 py-3 rounded">Annuller</button>
                 </div>
-            `).join('');
-        }
+            </div>
+        </div>
+    </div>
 
-        // Simpel Log-funktion
-        let logs = JSON.parse(localStorage.getItem('myLogs')) || [
-            { type: 'LS4', reg: 'OY-XRG', duration: '02:30' }
+    <script>
+        let savings = JSON.parse(localStorage.getItem('savings_data')) || [];
+        let tasks = JSON.parse(localStorage.getItem('tasks_data')) || [
+            { text: "Slå græs hos naboen", done: false },
+            { text: "Vaske bil", done: false }
         ];
+        const target = 4920;
 
-        function displayLogs() {
-            const tbody = document.getElementById('logTableBody');
-            tbody.innerHTML = logs.map((log, index) => `
-                <tr class="border-b border-slate-800/50 hover:bg-slate-800/20 transition">
-                    <td class="p-4 text-sm font-medium">${log.type}</td>
-                    <td class="p-4 text-sm text-slate-400">${log.reg}</td>
-                    <td class="p-4 text-sm text-blue-400 font-mono">${log.duration}</td>
-                    <td class="p-4 text-right">
-                        <button onclick="deleteLog(${index})" class="text-slate-600 hover:text-red-500 transition"><i class="fas fa-trash"></i></button>
-                    </td>
-                </tr>
-            `).join('');
+        function toggleModal(id) {
+            document.getElementById(id).classList.toggle('hidden');
         }
 
-        function addLogEntry() {
-            const duration = prompt("Hvor længe fløj du? (f.eks. 01:45)");
-            if (duration) {
-                logs.unshift({ type: 'ASK21', reg: 'OY-XSC', duration: duration });
-                localStorage.setItem('myLogs', JSON.stringify(logs));
-                displayLogs();
+        function saveMoney() {
+            const amount = document.getElementById('input-amount').value;
+            const note = document.getElementById('input-note').value;
+            const who = document.getElementById('input-who').value;
+            const date = new Date().toLocaleDateString('da-DK');
+
+            if(amount) {
+                savings.unshift({ date, amount: parseInt(amount), note, who });
+                localStorage.setItem('savings_data', JSON.stringify(savings));
+                render();
+                toggleModal('money-modal');
             }
         }
 
-        function deleteLog(index) {
-            logs.splice(index, 1);
-            localStorage.setItem('myLogs', JSON.stringify(logs));
-            displayLogs();
+        function addTask() {
+            const input = document.getElementById('task-input');
+            if(input.value) {
+                tasks.push({ text: input.value, done: false });
+                localStorage.setItem('tasks_data', JSON.stringify(tasks));
+                input.value = '';
+                render();
+            }
         }
 
-        function processImage(input) {
-            alert("Billede modtaget! AI-processering starter... (Dette kræver en server i næste skridt)");
+        function toggleTask(index) {
+            tasks[index].done = !tasks[index].done;
+            localStorage.setItem('tasks_data', JSON.stringify(tasks));
+            render();
         }
 
-        // Start appen
-        displayAircrafts();
-        displayLogs();
+        function render() {
+            // Penge tabel
+            const table = document.getElementById('money-table');
+            let total = 0;
+            table.innerHTML = savings.map((s, i) => {
+                total += s.amount;
+                return `
+                <tr class="border-b border-gray-800/50">
+                    <td class="p-4 text-gray-500 text-xs">${s.date}</td>
+                    <td class="p-4 font-bold text-[#ff9f1c]">${s.amount} kr</td>
+                    <td class="p-4 text-gray-300 text-xs">${s.note}</td>
+                    <td class="p-4 text-gray-500 text-xs">${s.who}</td>
+                    <td class="p-4 text-right"><button onclick="deleteMoney(${i})" class="text-gray-700 hover:text-red-500"><i class="fas fa-trash"></i></button></td>
+                </tr>`;
+            }).join('');
+
+            // Opdater stats
+            document.getElementById('display-opsparet').innerText = total + " kr";
+            document.getElementById('display-mangler').innerText = (target - total) + " kr";
+
+            // Opgaver
+            document.getElementById('task-list').innerHTML = tasks.map((t, i) => `
+                <div onclick="toggleTask(${i})" class="flex items-center gap-3 p-3 bg-[#1a1a1a] rounded cursor-pointer border border-gray-800 hover:border-gray-700">
+                    <i class="fas ${t.done ? 'fa-check-circle text-green-500' : 'fa-circle text-gray-700'}"></i>
+                    <span class="${t.done ? 'line-through text-gray-600' : 'text-gray-300'} text-sm">${t.text}</span>
+                </div>
+            `).join('');
+        }
+
+        function deleteMoney(i) {
+            savings.splice(i, 1);
+            localStorage.setItem('savings_data', JSON.stringify(savings));
+            render();
+        }
+
+        render();
     </script>
-
 </body>
 </html>
