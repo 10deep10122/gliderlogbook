@@ -3,120 +3,201 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tracker</title>
+    <title>Savings Hub</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        body { background: #000; color: #fff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-        .thin-border { border: 1px solid #222; }
-        input[type="file"] { display: none; }
+        body { background: #121212; color: #e0e0e0; font-family: 'Inter', sans-serif; }
+        .gray-card { background: #1e1e1e; border: 1px solid #2a2a2a; border-radius: 16px; }
+        .input-gray { background: #2a2a2a; border: 1px solid #3a3a3a; border-radius: 8px; color: white; padding: 8px 12px; outline: none; }
+        .input-gray:focus { border-color: #4a4a4a; }
+        .btn-primary { background: #e0e0e0; color: #121212; font-weight: 600; border-radius: 8px; padding: 8px 16px; transition: 0.2s; }
+        .btn-primary:hover { background: #ffffff; }
     </style>
 </head>
-<body class="p-6 md:p-12">
+<body class="p-4 md:p-10">
 
-    <div class="max-w-2xl mx-auto space-y-12">
+    <div class="max-w-4xl mx-auto space-y-10">
         
-        <div class="flex justify-between items-start">
-            <div>
-                <h1 id="display-remaining" class="text-6xl font-light tracking-tighter">0 kr</h1>
-                <p class="text-gray-500 text-xs uppercase tracking-widest mt-2">Mangler stadig</p>
-            </div>
-            <button onclick="document.getElementById('settings').classList.toggle('hidden')" class="text-gray-700 hover:text-white transition">
-                <i class="fas fa-plus"></i>
+        <header class="flex justify-between items-center">
+            <h1 class="text-2xl font-bold tracking-tight">Savings<span class="text-gray-500">Hub</span></h1>
+            <button onclick="openSettings()" class="text-gray-400 hover:text-white transition">
+                <i class="fas fa-cog"></i>
             </button>
+        </header>
+
+        <section id="goals-grid" class="grid md:grid-cols-2 gap-6">
+            </section>
+
+        <div class="grid md:grid-cols-2 gap-10 pt-10 border-t border-[#2a2a2a]">
+            <section class="space-y-4">
+                <h2 class="text-xs font-bold text-gray-500 uppercase tracking-widest">Aktive Opgaver</h2>
+                <div id="task-list" class="space-y-2"></div>
+                <button onclick="toggleModal('task-modal')" class="text-xs text-gray-400 hover:text-white underline">+ Ny opgave</button>
+            </section>
+
+            <section class="space-y-4">
+                <h2 class="text-xs font-bold text-gray-500 uppercase tracking-widest">Seneste Indtjening</h2>
+                <div id="money-log" class="gray-card divide-y divide-[#2a2a2a] overflow-hidden"></div>
+            </section>
         </div>
-
-        <div id="settings" class="hidden space-y-4 pt-4 border-t border-[#111]">
-            <div class="grid grid-cols-3 gap-2">
-                <input type="number" id="cfg-target" placeholder="Mål" class="bg-transparent border-b border-[#222] p-2 text-sm outline-none focus:border-white">
-                <input type="number" id="cfg-discount" placeholder="Rabat" class="bg-transparent border-b border-[#222] p-2 text-sm outline-none focus:border-white">
-                <input type="number" id="cfg-other" placeholder="Pure" class="bg-transparent border-b border-[#222] p-2 text-sm outline-none focus:border-white">
-            </div>
-            <button onclick="saveSettings()" class="w-full text-[10px] font-bold tracking-widest uppercase border border-[#222] py-2 hover:bg-white hover:text-black transition">Gem Konfiguration</button>
-        </div>
-
-        <section class="space-y-6">
-            <div class="flex justify-between items-center border-b border-[#111] pb-2">
-                <h2 class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Aktive Opgaver</h2>
-                <button onclick="document.getElementById('new-task-modal').classList.toggle('hidden')" class="text-xs text-blue-500 underline">Ny opgave</button>
-            </div>
-            
-            <div id="task-list" class="space-y-4"></div>
-
-            <div id="new-task-modal" class="hidden space-y-4 bg-[#050505] p-4 rounded border border-[#222]">
-                <input type="text" id="t-name" placeholder="Navn på opgave" class="w-full bg-transparent border-b border-[#222] py-2 outline-none">
-                <input type="number" id="t-reward" placeholder="Løn (kr)" class="w-full bg-transparent border-b border-[#222] py-2 outline-none">
-                <button onclick="saveTask()" class="w-full bg-white text-black py-2 text-xs font-bold uppercase">Opret</button>
-            </div>
-        </section>
-
-        <section class="space-y-4">
-            <h2 class="text-[10px] font-bold text-gray-500 uppercase tracking-widest border-b border-[#111] pb-2">Logbog</h2>
-            <div id="money-log" class="space-y-3"></div>
-        </section>
-
     </div>
 
-    <input type="file" id="camera-input" accept="image/*" capture="environment" onchange="confirmCompletion()">
+    <div id="settings-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-6">
+        <div class="gray-card p-8 w-full max-w-md space-y-6">
+            <h2 class="text-xl font-bold">Administrer Mål</h2>
+            <div id="goal-settings-list" class="space-y-4 max-h-60 overflow-y-auto"></div>
+            <div class="pt-4 border-t border-[#2a2a2a] space-y-2">
+                <input type="text" id="new-goal-name" placeholder="Nyt mål navn" class="w-full input-gray text-sm">
+                <input type="number" id="new-goal-price" placeholder="Pris (kr)" class="w-full input-gray text-sm">
+                <button onclick="addGoal()" class="w-full btn-primary text-sm">Tilføj Nyt Mål</button>
+            </div>
+            <button onclick="toggleModal('settings-modal')" class="w-full text-xs text-gray-500 hover:text-white pt-2">Luk</button>
+        </div>
+    </div>
+
+    <div id="task-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-6">
+        <div class="gray-card p-8 w-full max-w-md space-y-4">
+            <h2 class="text-xl font-bold">Opret Opgave</h2>
+            <input type="text" id="t-name" placeholder="Hvad skal du lave?" class="w-full input-gray">
+            <input type="number" id="t-reward" placeholder="Løn (kr)" class="w-full input-gray">
+            <div class="space-y-1">
+                <label class="text-[10px] text-gray-500 uppercase">Hvilket mål skal pengene gå til?</label>
+                <select id="t-goal-select" class="w-full input-gray text-sm"></select>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="saveTask()" class="flex-1 btn-primary">Opret</button>
+                <button onclick="toggleModal('task-modal')" class="flex-1 text-gray-500">Fortryd</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="image-modal" class="hidden fixed inset-0 bg-black/95 z-[60] flex items-center justify-center p-4" onclick="this.classList.add('hidden')">
+        <img id="preview-img" src="" class="max-w-full max-h-full rounded-lg shadow-2xl">
+    </div>
+
+    <input type="file" id="camera-input" class="hidden" accept="image/*" onchange="processCapture(this)">
 
     <script>
-        let config = JSON.parse(localStorage.getItem('cfg')) || { target: 8500, discount: 1100, other: 4920 };
-        let money = JSON.parse(localStorage.getItem('money')) || [{amt: 420, note: 'Startbeløb', date: '09-04-2026'}];
-        let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-        let currentTaskId = null;
+        let goals = JSON.parse(localStorage.getItem('h_goals')) || [
+            { id: 1, name: 'Flyveklub', target: 8500, discount: 1100, other: 4920 }
+        ];
+        let logs = JSON.parse(localStorage.getItem('h_logs')) || [
+            { id: 101, goalId: 1, amt: 420, note: 'Startbeløb', date: '09-04-2026', img: null }
+        ];
+        let tasks = JSON.parse(localStorage.getItem('h_tasks')) || [];
+        let activeTaskId = null;
 
-        function saveSettings() {
-            config.target = parseInt(document.getElementById('cfg-target').value) || 0;
-            config.discount = parseInt(document.getElementById('cfg-discount').value) || 0;
-            config.other = parseInt(document.getElementById('cfg-other').value) || 0;
-            localStorage.setItem('cfg', JSON.stringify(config));
-            render();
+        function toggleModal(id) { document.getElementById(id).classList.toggle('hidden'); }
+
+        function openSettings() {
+            const list = document.getElementById('goal-settings-list');
+            list.innerHTML = goals.map(g => `
+                <div class="flex items-center gap-2">
+                    <input type="text" onchange="updateGoal(${g.id}, 'name', this.value)" value="${g.name}" class="flex-1 input-gray text-xs">
+                    <input type="number" onchange="updateGoal(${g.id}, 'target', this.value)" value="${g.target}" class="w-20 input-gray text-xs">
+                    <button onclick="deleteGoal(${g.id})" class="text-red-900 hover:text-red-500 ml-2"><i class="fas fa-trash"></i></button>
+                </div>
+            `).join('');
+            toggleModal('settings-modal');
         }
+
+        function addGoal() {
+            const name = document.getElementById('new-goal-name').value;
+            const price = document.getElementById('new-goal-price').value;
+            if(!name || !price) return;
+            goals.push({ id: Date.now(), name, target: parseInt(price), discount: 0, other: 0 });
+            save(); render();
+        }
+
+        function updateGoal(id, key, val) {
+            const g = goals.find(x => x.id === id);
+            g[key] = key === 'name' ? val : parseInt(val);
+            save(); render();
+        }
+
+        function deleteGoal(id) { goals = goals.filter(g => g.id !== id); save(); render(); openSettings(); }
 
         function saveTask() {
             const name = document.getElementById('t-name').value;
             const reward = document.getElementById('t-reward').value;
+            const goalId = document.getElementById('t-goal-select').value;
             if(!name || !reward) return;
-            tasks.push({ id: Date.now(), name, reward: parseInt(reward) });
-            localStorage.setItem('tasks', JSON.stringify(tasks));
-            document.getElementById('new-task-modal').classList.add('hidden');
-            render();
+            tasks.push({ id: Date.now(), name, reward: parseInt(reward), goalId: parseInt(goalId) });
+            save(); render(); toggleModal('task-modal');
         }
 
-        function startComplete(id) {
-            currentTaskId = id;
-            document.getElementById('camera-input').click();
+        function startComplete(id) { activeTaskId = id; document.getElementById('camera-input').click(); }
+
+        function processCapture(input) {
+            if (!input.files[0]) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const task = tasks.find(t => t.id === activeTaskId);
+                logs.unshift({
+                    id: Date.now(),
+                    goalId: task.goalId,
+                    amt: task.reward,
+                    note: task.name,
+                    date: new Date().toLocaleDateString('da-DK'),
+                    img: e.target.result
+                });
+                tasks = tasks.filter(t => t.id !== activeTaskId);
+                save(); render();
+            };
+            reader.readAsDataURL(input.files[0]);
         }
 
-        function confirmCompletion() {
-            const idx = tasks.findIndex(t => t.id === currentTaskId);
-            money.unshift({ amt: tasks[idx].reward, note: tasks[idx].name, date: new Date().toLocaleDateString('da-DK') });
-            tasks.splice(idx, 1);
-            localStorage.setItem('money', JSON.stringify(money));
-            localStorage.setItem('tasks', JSON.stringify(tasks));
-            render();
-            alert("Billede gemt og penge overført!");
+        function showImg(src) { 
+            document.getElementById('preview-img').src = src;
+            toggleModal('image-modal');
+        }
+
+        function deleteLog(id) { logs = logs.filter(l => l.id !== id); save(); render(); }
+
+        function save() {
+            localStorage.setItem('h_goals', JSON.stringify(goals));
+            localStorage.setItem('h_logs', JSON.stringify(logs));
+            localStorage.setItem('h_tasks', JSON.stringify(tasks));
         }
 
         function render() {
-            const saved = money.reduce((s, i) => s + i.amt, 0);
-            const remaining = config.target - config.discount - config.other - saved;
-            document.getElementById('display-remaining').innerText = remaining.toLocaleString() + " kr";
+            const grid = document.getElementById('goals-grid');
+            grid.innerHTML = goals.map(g => {
+                const saved = logs.filter(l => l.goalId === g.id).reduce((s, i) => s + i.amt, 0);
+                const remaining = g.target - g.discount - g.other - saved;
+                return `
+                    <div class="gray-card p-6 space-y-1">
+                        <p class="text-[10px] text-gray-500 uppercase font-bold tracking-widest">${g.name}</p>
+                        <h3 class="text-3xl font-bold">${remaining.toLocaleString()} kr</h3>
+                        <p class="text-[10px] text-gray-600 font-mono italic">Mål: ${g.target} | Sparet: ${saved}</p>
+                    </div>
+                `;
+            }).join('');
+
+            const tSelect = document.getElementById('t-goal-select');
+            tSelect.innerHTML = goals.map(g => `<option value="${g.id}">${g.name}</option>`).join('');
 
             document.getElementById('task-list').innerHTML = tasks.map(t => `
-                <div class="flex justify-between items-center py-2">
-                    <div>
-                        <p class="text-sm font-medium">${t.name}</p>
-                        <p class="text-[10px] text-blue-500 font-mono">${t.reward} kr</p>
-                    </div>
-                    <button onclick="startComplete(${t.id})" class="text-[10px] border border-white/20 px-3 py-1 rounded-full hover:bg-white hover:text-black">Udfør & Foto</button>
+                <div class="gray-card p-3 flex justify-between items-center">
+                    <span class="text-xs font-medium">${t.name} <span class="text-blue-500 ml-2">${t.reward}.-</span></span>
+                    <button onclick="startComplete(${t.id})" class="text-[10px] bg-blue-500/10 text-blue-500 px-3 py-1 rounded-full uppercase font-bold">Udfør & Foto</button>
                 </div>
             `).join('');
 
-            document.getElementById('money-log').innerHTML = money.map(m => `
-                <div class="flex justify-between text-xs py-1">
-                    <span class="text-gray-500">${m.note}</span>
-                    <span class="font-mono text-gray-300">${m.amt} kr</span>
+            document.getElementById('money-log').innerHTML = logs.map(l => `
+                <div class="p-3 flex justify-between items-center group text-xs">
+                    <div class="flex items-center gap-3">
+                        ${l.img ? `<button onclick="showImg('${l.img}')" class="text-blue-500 hover:text-white"><i class="fas fa-paperclip"></i></button>` : '<i class="fas fa-coins text-gray-700"></i>'}
+                        <div>
+                            <p class="font-bold">${l.note}</p>
+                            <p class="text-[9px] text-gray-600 uppercase">${l.date}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <span class="font-bold text-gray-200">${l.amt}.-</span>
+                        <button onclick="deleteLog(${l.id})" class="text-gray-800 group-hover:text-red-500 transition"><i class="fas fa-times"></i></button>
+                    </div>
                 </div>
             `).join('');
         }
