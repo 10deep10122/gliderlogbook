@@ -3,262 +3,303 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Opsparing Pro</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
     <style>
-        :root { --bg: #000000; --card: #1c1c1e; --text: #ffffff; --accent: #0a84ff; }
-        
+        :root { --bg: #000; --card: #1c1c1e; --accent: #0a84ff; }
         body { 
-            background: var(--bg); color: var(--text); 
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+            background: var(--bg); color: #fff; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             padding-top: env(safe-area-inset-top);
             padding-bottom: env(safe-area-inset-bottom);
             min-height: 100vh;
-            -webkit-tap-highlight-color: transparent;
         }
-
-        /* Mobil-først container */
-        .app-shell {
-            max-width: 500px;
-            margin: 0 auto;
-            padding: 20px;
-            padding-bottom: 120px; /* Plads til flydende knapper */
-        }
-
-        .ios-card { 
-            background: var(--card); 
-            border-radius: 24px; 
-            border: 1px solid rgba(255,255,255,0.06);
-            transition: transform 0.1s ease;
-        }
-
-        .ios-card:active { transform: scale(0.97); }
-
-        .ios-blur {
-            background: rgba(28, 28, 30, 0.85);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-        }
-
+        .ios-card { background: var(--card); border-radius: 28px; border: 1px solid rgba(255,255,255,0.06); }
+        .ios-blur { background: rgba(28, 28, 30, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
         .hidden { display: none !important; }
-
-        /* Gør input-felter store og lækre på tlf */
-        input, select {
-            background: rgba(255,255,255,0.08) !important;
-            border-radius: 16px !important;
-            padding: 16px !important;
-            font-size: 17px !important; /* Forhindrer iOS auto-zoom */
+        
+        input, select { 
+            background: rgba(255,255,255,0.08) !important; 
+            border: 1px solid rgba(255,255,255,0.1) !important; 
+            color: white !important; 
+            border-radius: 16px !important; 
+            padding: 16px !important; 
             width: 100%;
-            border: none !important;
-            color: white !important;
+            outline: none;
         }
 
-        .floating-add {
-            position: fixed;
-            bottom: calc(30px + env(safe-area-inset-bottom));
-            right: 25px;
-            width: 65px;
-            height: 65px;
-            background: #facc15;
-            color: black;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-            z-index: 100;
+        .btn-ios {
+            background: #fff; color: #000;
+            font-weight: 800; border-radius: 20px;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
+        .btn-ios:active { transform: scale(0.95); opacity: 0.8; }
+
+        .floating-add { 
+            position: fixed; bottom: 40px; right: 25px; 
+            width: 68px; height: 68px; background: #facc15; 
+            border-radius: 50%; display: flex; align-items: center; 
+            justify-content: center; font-size: 26px; color: black; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5); z-index: 100; 
+            transition: 0.2s;
+        }
+        .floating-add:active { transform: scale(0.85); }
+
+        .progress-bar { transition: width 1.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
     </style>
 </head>
-<body>
+<body class="p-4">
 
-    <div class="app-shell">
-        <header class="flex justify-between items-center mb-8">
-            <h1 class="text-3xl font-black italic tracking-tighter uppercase">Opsparing</h1>
-            <div class="ios-card px-4 py-2 flex items-center gap-2">
+    <div class="max-w-md mx-auto space-y-6">
+        
+        <header id="app-header" class="flex justify-between items-center py-4">
+            <h1 class="text-3xl font-black italic uppercase tracking-tighter">Opsparing</h1>
+            <div class="bg-[#1c1c1e] px-4 py-2 rounded-full border border-white/10 flex items-center gap-2">
                 <span class="text-orange-500">🔥</span>
-                <span id="global-streak" class="font-bold text-sm">0</span>
+                <span id="streak-val" class="font-bold text-sm">0</span>
             </div>
         </header>
 
-        <div id="view-dashboard" class="space-y-8">
-            
-            <div class="text-center py-6">
-                <p class="text-[10px] font-black opacity-30 uppercase tracking-[0.3em] mb-1">Mangler stadig til <span id="current-goal-title">mål</span></p>
-                <h2 id="dash-remaining" class="text-6xl font-black tracking-tighter mb-6">0 kr</h2>
-                <div class="w-full bg-white/10 h-2.5 rounded-full overflow-hidden mb-2">
-                    <div id="dash-progress-fill" class="bg-blue-500 h-full transition-all duration-1000" style="width: 0%"></div>
+        <section id="view-login" class="space-y-6">
+            <p class="text-[10px] font-black opacity-30 uppercase tracking-[0.3em] px-2">Log ind</p>
+            <div onclick="showView('view-goals')" class="ios-card p-6 flex items-center gap-4 cursor-pointer active:scale-95 transition">
+                <img id="user-pfp" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200" class="w-16 h-16 rounded-full border-2 border-blue-500/20 shadow-xl">
+                <div class="flex-1 text-left">
+                    <h2 id="user-name" class="text-xl font-bold">Jonathan</h2>
+                    <p class="text-[10px] opacity-40 font-black uppercase tracking-widest">Tryk for at fortsætte</p>
                 </div>
-                <div class="flex justify-between px-1">
-                    <span id="dash-pct" class="text-[10px] font-bold opacity-30 uppercase tracking-widest">0% Færdig</span>
-                    <button onclick="generateShareCard()" class="text-blue-500 text-[10px] font-bold uppercase tracking-widest">Del <i class="fas fa-share ml-1"></i></button>
+                <i class="fas fa-chevron-right opacity-20"></i>
+            </div>
+        </section>
+
+        <section id="view-goals" class="hidden space-y-6">
+            <div class="flex justify-between items-center px-2">
+                <h2 class="text-[10px] font-black opacity-30 uppercase tracking-[0.3em]">Dine Mål</h2>
+                <button onclick="showView('view-login')" class="text-blue-500 text-xs font-bold">Skift profil</button>
+            </div>
+            <div id="goals-list" class="grid gap-4"></div>
+            <button onclick="alert('Tilføj mål funktion kommer!')" class="w-full py-6 ios-card border border-dashed border-white/20 text-white/30 font-bold uppercase text-[10px] tracking-widest">+ Nyt Mål</button>
+        </section>
+
+        <section id="view-dash" class="hidden space-y-8 pb-32">
+            <div class="flex justify-between items-center">
+                <button onclick="showView('view-goals')" class="text-blue-500 font-bold text-sm"><i class="fas fa-chevron-left mr-1"></i> Oversigt</button>
+                <h2 id="dash-goal-title" class="font-black text-[10px] uppercase opacity-30 tracking-[0.3em]">Mål</h2>
+                <button onclick="generateShareCard()" class="w-12 h-12 flex items-center justify-center bg-white/5 rounded-full text-blue-500">
+                    <i class="fas fa-share-nodes"></i>
+                </button>
+            </div>
+
+            <div class="text-center space-y-4">
+                <p class="text-[10px] font-black opacity-30 uppercase tracking-[0.3em]">Du mangler kun</p>
+                <h2 id="dash-rem" class="text-7xl font-black tracking-tighter">0 kr</h2>
+                <div class="px-4">
+                    <div class="w-full bg-white/5 h-3 rounded-full overflow-hidden mb-3">
+                        <div id="dash-bar" class="progress-bar bg-blue-500 h-full shadow-[0_0_15px_rgba(59,130,246,0.5)]" style="width: 0%"></div>
+                    </div>
+                    <p id="dash-pct" class="text-[10px] font-black opacity-30 tracking-widest uppercase">0% GENNEMFØRT</p>
                 </div>
             </div>
 
             <div class="space-y-4">
-                <div class="flex justify-between items-center">
-                    <h3 class="text-[11px] font-black opacity-40 uppercase tracking-widest">Aktive Opgaver</h3>
-                    <button onclick="toggleModal('task-modal')" class="text-blue-500 text-xs font-bold">Ny +</button>
+                <div class="flex justify-between items-center px-2">
+                    <h3 class="text-[10px] font-black opacity-40 uppercase tracking-[0.2em]">Dagens Opgaver</h3>
+                    <button onclick="toggleModal('modal-task')" class="bg-blue-500/10 text-blue-500 text-[10px] px-3 py-1.5 rounded-full font-bold tracking-widest">NY +</button>
                 </div>
                 <div id="dash-tasks" class="space-y-3"></div>
             </div>
 
             <div class="space-y-4">
-                <h3 class="text-[11px] font-black opacity-40 uppercase tracking-widest">Historik</h3>
-                <div id="dash-log" class="ios-card p-4 space-y-4 divide-y divide-white/5">
-                    </div>
+                <h3 class="text-[10px] font-black opacity-40 uppercase tracking-[0.2em] px-2">Seneste logs</h3>
+                <div id="dash-logs" class="ios-card p-6 space-y-4 divide-y divide-white/5"></div>
             </div>
-        </div>
+        </section>
+
     </div>
 
-    <button onclick="toggleModal('quick-log-modal')" class="floating-add">
+    <button id="main-add-btn" onclick="toggleModal('modal-money')" class="floating-add hidden">
         <i class="fas fa-plus"></i>
     </button>
 
-    <div id="quick-log-modal" class="hidden fixed inset-0 ios-blur z-[500] flex items-end sm:items-center justify-center p-0 sm:p-6">
-        <div class="bg-[#1c1c1e] w-full max-w-[500px] p-8 rounded-t-[32px] sm:rounded-[32px] space-y-6">
-            <div class="w-12 h-1 bg-white/10 rounded-full mx-auto -mt-2 mb-4"></div>
-            <h2 class="text-2xl font-black italic text-center uppercase tracking-tighter">Tilføj Penge 💰</h2>
-            
+    <div id="modal-money" class="hidden fixed inset-0 ios-blur z-[500] flex items-end sm:items-center justify-center">
+        <div class="bg-[#1c1c1e] w-full max-w-md p-8 rounded-t-[40px] space-y-6 border-t border-white/10 animate-slide-up">
+            <div class="w-12 h-1 bg-white/10 rounded-full mx-auto mb-2"></div>
+            <h2 class="text-2xl font-black text-center italic tracking-tight uppercase">Tilføj Penge 💰</h2>
             <div class="space-y-4">
-                <input type="number" id="quick-amt" placeholder="Beløb (kr)" inputmode="numeric">
-                <input type="date" id="quick-date">
-                <input type="text" id="quick-note" placeholder="Hvad har du lavet?">
+                <div class="space-y-1">
+                    <label class="text-[10px] font-black opacity-30 uppercase ml-2">Hvor meget?</label>
+                    <input type="number" id="m-amt" placeholder="0 kr" inputmode="numeric" class="text-2xl font-black">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-[10px] font-black opacity-30 uppercase ml-2">Hvad har du lavet?</label>
+                    <input type="text" id="m-note" placeholder="F.eks. Pant, Gave, Arbejde...">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-[10px] font-black opacity-30 uppercase ml-2">Dato</label>
+                    <input type="date" id="m-date">
+                </div>
             </div>
-
-            <button onclick="submitQuickLog()" class="w-full py-5 bg-blue-500 text-white rounded-2xl font-black text-lg shadow-lg">GEM LOG</button>
-            <button onclick="toggleModal('quick-log-modal')" class="w-full py-2 text-white/30 font-bold uppercase text-[10px]">Annuller</button>
+            <button onclick="addMoney()" class="w-full py-5 btn-ios text-lg">LOG PENGE</button>
+            <button onclick="toggleModal('modal-money')" class="w-full py-2 text-white/20 font-bold uppercase text-[10px]">Annuller</button>
         </div>
     </div>
 
-    <div id="task-modal" class="hidden fixed inset-0 ios-blur z-[500] flex items-center justify-center p-6">
-        <div class="ios-card p-8 w-full max-w-sm space-y-5">
-            <h2 class="text-xl font-bold uppercase italic tracking-tight">Opret Opgave</h2>
-            <div class="space-y-3">
-                <input type="text" id="t-name" placeholder="Navn på opgave">
-                <input type="number" id="t-reward" placeholder="Løn i kr" inputmode="numeric">
+    <div id="modal-task" class="hidden fixed inset-0 ios-blur z-[500] flex items-center justify-center p-6">
+        <div class="ios-card p-8 w-full max-w-sm space-y-5 border border-white/10">
+            <h2 class="text-xl font-black italic uppercase tracking-tighter">Opret Ny Opgave</h2>
+            <div class="space-y-4">
+                <input type="text" id="t-name" placeholder="Opgavens navn">
+                <input type="number" id="t-reward" placeholder="Belønning i kr" inputmode="numeric">
             </div>
-            <button onclick="createNewTask()" class="w-full py-4 bg-blue-600 rounded-xl font-bold">OPRET</button>
-            <button onclick="toggleModal('task-modal')" class="w-full text-xs opacity-30 font-bold uppercase">Luk</button>
+            <button onclick="addTask()" class="w-full py-5 btn-ios">OPRET OPGAVE</button>
+            <button onclick="toggleModal('modal-task')" class="w-full text-xs opacity-20 font-bold uppercase">Luk</button>
         </div>
     </div>
 
-    <input type="file" id="camera-input" class="hidden" accept="image/*" capture="environment" onchange="completeActiveTask()">
+    <input type="file" id="camera-input" class="hidden" accept="image/*" capture="environment" onchange="completeTask()">
 
     <script>
-        const STORAGE_KEY = "opsparing_final_v12";
-        let state = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
-            user: { name: 'Jonathan', pfp: '' },
-            goals: [{ id: 1, name: 'Flyveklub', target: 8500, discount: 1100, other: 4920 }],
+        const DB_KEY = "opsparing_final_V15";
+        let state = JSON.parse(localStorage.getItem(DB_KEY)) || {
+            user: { name: 'Jonathan', pfp: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200' },
+            goals: [{ id: 1, name: 'Flyveklub', target: 8500, base: 6020 }],
             logs: [],
             tasks: []
         };
+        let activeGoalId = null;
         let activeTaskId = null;
-        let activeGoalId = 1; 
 
-        function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+        function save() { localStorage.setItem(DB_KEY, JSON.stringify(state)); }
 
-        function toggleModal(id) {
+        function showView(id) {
+            document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
+            document.getElementById('main-add-btn').classList.toggle('hidden', id !== 'view-dash');
+            if(id === 'view-login') renderUser();
+            if(id === 'view-goals') renderGoals();
+        }
+
+        function toggleModal(id) { 
             document.getElementById(id).classList.toggle('hidden');
-            if(id === 'quick-log-modal') {
-                document.getElementById('quick-date').valueAsDate = new Date();
-                document.getElementById('quick-amt').focus();
-            }
+            if(id === 'modal-money') document.getElementById('m-date').valueAsDate = new Date();
         }
 
-        function calculateStreak() {
-            if (state.logs.length === 0) return 0;
-            const dates = [...new Set(state.logs.map(l => l.date))].sort((a,b) => new Date(b) - new Date(a));
-            let streak = 0; let check = new Date();
-            for(let d of dates) {
-                let ld = new Date(d);
-                if(Math.floor((check - ld)/86400000) <= 1) { streak++; check = ld; } else break;
-            }
-            return streak;
+        function renderUser() {
+            document.getElementById('user-name').innerText = state.user.name;
+            document.getElementById('user-pfp').src = state.user.pfp;
+            document.getElementById('streak-val').innerText = calculateStreak();
         }
 
-        function renderDashboard() {
-            const g = state.goals[0]; // Vi fokuserer på dit hovedmål
-            const saved = state.logs.reduce((s, i) => s + i.amt, 0);
-            const total = (g.target - (g.discount||0) - (g.other||0));
+        function renderGoals() {
+            const list = document.getElementById('goals-list');
+            list.innerHTML = state.goals.map(g => {
+                const saved = state.logs.filter(l => l.goalId === g.id).reduce((s, i) => s + i.amt, 0);
+                const rem = (g.target - g.base) - saved;
+                return `
+                <div onclick="openDash(${g.id})" class="ios-card p-6 flex justify-between items-center cursor-pointer active:scale-[0.98] transition shadow-lg">
+                    <div>
+                        <p class="text-[9px] font-black opacity-30 uppercase tracking-[0.2em] mb-1">${g.name}</p>
+                        <h3 class="text-3xl font-black tracking-tighter">${(rem > 0 ? rem : 0).toLocaleString()} kr</h3>
+                    </div>
+                    <i class="fas fa-chevron-right text-blue-500/30"></i>
+                </div>`;
+            }).join('');
+        }
+
+        function openDash(id) { activeGoalId = id; showView('view-dash'); renderDash(); }
+
+        function renderDash() {
+            const g = state.goals.find(x => x.id === activeGoalId);
+            const saved = state.logs.filter(l => l.goalId === activeGoalId).reduce((s, i) => s + i.amt, 0);
+            const total = (g.target - g.base);
             const rem = total - saved;
             const pct = Math.min(100, Math.floor((saved/total)*100));
 
-            document.getElementById('dash-remaining').innerText = (rem > 0 ? rem : 0).toLocaleString() + " kr";
-            document.getElementById('dash-progress-fill').style.width = pct + "%";
-            document.getElementById('dash-pct').innerText = pct + "% Færdig";
-            document.getElementById('global-streak').innerText = calculateStreak();
+            document.getElementById('dash-goal-title').innerText = g.name;
+            document.getElementById('dash-rem').innerText = (rem > 0 ? rem : 0).toLocaleString() + " kr";
+            document.getElementById('dash-bar').style.width = pct + "%";
+            document.getElementById('dash-pct').innerText = pct + "% GENNEMFØRT";
+            document.getElementById('streak-val').innerText = calculateStreak();
 
-            // Opgaver
-            document.getElementById('dash-tasks').innerHTML = state.tasks.map(t => `
-                <div onclick="activeTaskId=${t.id}; document.getElementById('camera-input').click()" class="ios-card p-5 flex justify-between items-center active:bg-white/5">
-                    <p class="font-bold">${t.name}</p>
-                    <div class="text-blue-500 font-black">${t.reward}.-</div>
-                </div>
-            `).join('') || '<p class="text-center opacity-20 text-[10px] py-4">Ingen aktive opgaver</p>';
-
-            // Logbog
-            document.getElementById('dash-log').innerHTML = state.logs.map(l => `
-                <div class="flex justify-between items-start pt-4 first:pt-0">
+            // Opgaver med kamera-klik
+            document.getElementById('dash-tasks').innerHTML = state.tasks.filter(t => t.goalId === activeGoalId).map(t => `
+                <div onclick="activeTaskId=${t.id}; document.getElementById('camera-input').click()" class="ios-card p-5 flex justify-between items-center active:bg-white/5 transition border-l-4 border-blue-500">
                     <div>
-                        <p class="text-[13px] font-bold">${l.note}</p>
-                        <p class="text-[10px] opacity-30 uppercase font-black">${new Date(l.date).toLocaleDateString('da-DK')}</p>
+                        <p class="font-bold text-sm">${t.name}</p>
+                        <p class="text-[9px] font-black opacity-30 uppercase tracking-widest">Klik for at færdiggøre</p>
                     </div>
-                    <span class="font-black text-green-500 text-sm">+${l.amt} kr</span>
+                    <span class="bg-blue-500/10 text-blue-500 px-4 py-1 rounded-full font-black text-xs">${t.reward}.-</span>
                 </div>
-            `).join('') || '<p class="text-center opacity-20 text-[10px] py-4">Din historik vil blive vist her</p>';
+            `).join('') || '<p class="text-center opacity-20 text-[10px] py-4 italic uppercase tracking-widest">Ingen aktive opgaver</p>';
+
+            // Historik
+            document.getElementById('dash-logs').innerHTML = state.logs.filter(l => l.goalId === activeGoalId).map(l => `
+                <div class="flex justify-between items-center pt-4 first:pt-0">
+                    <div>
+                        <p class="font-bold text-sm text-white/90">${l.note}</p>
+                        <p class="opacity-30 uppercase font-black text-[9px] tracking-tighter">${new Date(l.date).toLocaleDateString('da-DK')}</p>
+                    </div>
+                    <span class="font-black text-green-500">+${l.amt} kr</span>
+                </div>
+            `).join('') || '<p class="text-center opacity-20 py-2 text-[10px] uppercase font-black">Tom logbog</p>';
         }
 
-        function submitQuickLog() {
-            const amt = parseInt(document.getElementById('quick-amt').value);
-            const date = document.getElementById('quick-date').value;
-            const note = document.getElementById('quick-note').value || 'Penge lagt til';
+        function addMoney() {
+            const amt = parseInt(document.getElementById('m-amt').value);
+            const note = document.getElementById('m-note').value || 'Penge lagt til';
+            const date = document.getElementById('m-date').value;
             if(!amt || !date) return;
-
             state.logs.unshift({ goalId: activeGoalId, amt, note, date });
-            save();
-            toggleModal('quick-log-modal');
-            confetti({ particleCount: 150, origin: { y: 0.8 } });
-            renderDashboard();
-            
-            document.getElementById('quick-amt').value = '';
-            document.getElementById('quick-note').value = '';
+            save(); toggleModal('modal-money');
+            confetti({ particleCount: 150, origin: { y: 0.8 }, colors: ['#facc15', '#3b82f6', '#ffffff'] });
+            renderDash();
+            document.getElementById('m-amt').value = ''; document.getElementById('m-note').value = '';
         }
 
-        function createNewTask() {
-            const n = document.getElementById('t-name').value;
-            const r = document.getElementById('t-reward').value;
-            if(!n || !r) return;
-            state.tasks.push({ id: Date.now(), goalId: activeGoalId, name: n, reward: parseInt(r) });
-            save();
-            toggleModal('task-modal');
-            renderDashboard();
-            document.getElementById('t-name').value = '';
-            document.getElementById('t-reward').value = '';
+        function addTask() {
+            const name = document.getElementById('t-name').value;
+            const reward = document.getElementById('t-reward').value;
+            if(!name || !reward) return;
+            state.tasks.push({ id: Date.now(), goalId: activeGoalId, name, reward: parseInt(reward) });
+            save(); toggleModal('modal-task');
+            renderDash();
+            document.getElementById('t-name').value = ''; document.getElementById('t-reward').value = '';
         }
 
-        function completeActiveTask() {
+        function completeTask() {
             const t = state.tasks.find(x => x.id === activeTaskId);
             state.logs.unshift({ goalId: activeGoalId, amt: t.reward, note: t.name, date: new Date().toISOString().split('T')[0] });
             state.tasks = state.tasks.filter(x => x.id !== activeTaskId);
-            save();
-            confetti({ particleCount: 150 });
-            renderDashboard();
+            save(); 
+            confetti({ particleCount: 200, spread: 70, origin: { y: 0.6 } });
+            renderDash();
+        }
+
+        function calculateStreak() {
+            if (!state.logs.length) return 0;
+            const dates = [...new Set(state.logs.map(l => l.date))].sort((a,b) => new Date(b) - new Date(a));
+            let s = 0; let c = new Date();
+            for(let d of dates) {
+                if(Math.floor((c - new Date(d))/86400000) <= 1) { s++; c = new Date(d); } else break;
+            }
+            return s;
         }
 
         function generateShareCard() {
-            const g = state.goals[0];
-            const saved = state.logs.reduce((s, i) => s + i.amt, 0);
-            const rem = (g.target - (g.discount||0) - (g.other||0)) - saved;
-            const text = `💰 Jeg mangler kun ${(rem > 0 ? rem : 0).toLocaleString()} kr til ${g.name.toUpperCase()}! 🔥 Streak: ${calculateStreak()} dage.`;
+            const g = state.goals.find(x => x.id === activeGoalId);
+            const saved = state.logs.filter(l => l.goalId === activeGoalId).reduce((s, i) => s + i.amt, 0);
+            const rem = (g.target - g.base) - saved;
+            const text = `🚀 MÅL OPDATERING: Jeg mangler kun ${(rem > 0 ? rem : 0).toLocaleString()} kr til ${g.name.toUpperCase()}! 🔥 Streak: ${calculateStreak()} dage. #OpsparingPro`;
             if (navigator.share) { navigator.share({ text: text }); } else { alert("Kopieret til udklipsholder!"); navigator.clipboard.writeText(text); }
         }
 
-        // Start app
-        renderDashboard();
+        renderUser();
     </script>
 </body>
 </html>
